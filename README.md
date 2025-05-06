@@ -20,7 +20,34 @@
 
 # Подключение SDK
 
-Сейчас есть возможность подключить SDK только с помощью SPM.
+Сейчас есть возможность подключить SDK с помощью SPM и CocoaPods.
+
+## CocoaPods
+
+Варианты установки:
+1. Чтобы добавить библиотеку в проект c рекламой Buzzoola и ВК, добавьте в свой Podfile:
+```ruby
+pod 'BuzzoolaAdsSDK', '3.1.1'
+```
+2. Если вы хотите использовать только рекламу Buzzoola: 
+```ruby
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '3.1.1'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '3.1.1'
+```
+3. Если вы хотите использовать рекламу Buzzoola и ВК:
+```ruby
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '3.1.1'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKMyTarget', '3.1.1'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '3.1.1'
+```
+
+Для корректной работы так же обязательно указать в Podfile:
+```ruby
+install! 'cocoapods', :disable_input_output_paths => true # для отсутствия конфликтов с Assets
+source 'https://github.com/Buzzoola/buzzoola-ads-sdk' # ссылка на спецификацию BuzzoolaAdsSDK
+source 'https://github.com/MobileTeleSystems/mts-analytics-podspecs' # ссылка на спецификацию Аналитики
+source 'https://github.com/CocoaPods/Specs.git' # ссылка на общие спецификации
+```
 
 ## Swift Package Manager
 
