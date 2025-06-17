@@ -21,26 +21,26 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/MobileTeleSystems/mts-analytics-swiftpm-ios-sdk", exact: "5.0.0"),
+            url: "https://github.com/MobileTeleSystems/mts-analytics-swiftpm-ios-sdk", exact: "5.1.4"),
         .package(
             url: "https://github.com/devicekit/DeviceKit.git", exact: "5.5.0"),
         .package(
             url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.20.0"),
         .package(
-            url: "https://github.com/myTargetSDK/mytarget-ios-spm", exact: "5.29.1")
+            url: "https://github.com/myTargetSDK/mytarget-ios-spm", exact: "5.31.1")
     ],
     targets: [
         .binaryTarget(
             name: "BuzzoolaAdsSDK",
-            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDK_3.1.1.xcframework.zip",
-            checksum: "c01d2e943734323a68b36356c2f818597b663b000a80784ad4d6d4818d99c7f0"),
+            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDK_3.2.0.xcframework.zip",
+            checksum: "e5d15ed486cf4fc2a4676bfae8df5aaa8357ad15a9b06feab068749ed1841636"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKMyTarget",
-            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKMyTarget_3.1.1.xcframework.zip",
-            checksum: "425045376f769205f5d918e4a93b6be49685bd0499278f37ce1899e151837de3"),
+            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKMyTarget_3.2.0.xcframework.zip",
+            checksum: "a72b3e25b4d0b75e536c26cde50ded7ff769d8c26a10b8dbd2cbea85e1dcf0c9"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKAnalytics",
-            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKAnalytics_3.1.1.xcframework.zip",
-            checksum: "106f7564ee55cc1ce3403332d2ebbb1c367707b0cacc4c9af1bec33b2b729ca3")
+            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKAnalytics_3.2.0.xcframework.zip",
+            checksum: "106194d1aaf69d83995f589438aae281306b17b03f60c77ac97d0aa794700f65")
     ]
 )
