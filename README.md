@@ -12,7 +12,7 @@
 
 ## Текущая версия
 
-Версия: 3.3.1
+Версия: 3.3.2
 
 ## Требования для установки SDK
 
@@ -27,18 +27,18 @@
 Варианты установки:
 1. Чтобы добавить библиотеку в проект c рекламой Buzzoola и ВК, добавьте в свой Podfile:
 ```ruby
-pod 'BuzzoolaAdsSDK', '3.3.1'
+pod 'BuzzoolaAdsSDK', '3.3.2'
 ```
 2. Если вы хотите использовать только рекламу Buzzoola: 
 ```ruby
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '3.3.1'
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '3.3.1'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '3.3.2'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '3.3.2'
 ```
 3. Если вы хотите использовать рекламу Buzzoola и ВК:
 ```ruby
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '3.3.1'
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKMyTarget', '3.3.1'
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '3.3.1'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '3.3.2'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKMyTarget', '3.3.2'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '3.3.2'
 ```
 
 Для корректной работы так же обязательно указать в Podfile:
@@ -51,7 +51,7 @@ source 'https://github.com/CocoaPods/Specs.git' # ссылка на общие �
 
 ## Swift Package Manager
 
-Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 3.3.1 или задайте ее вручную, а после нажмите Add Package.
+Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 3.3.2 или задайте ее вручную, а после нажмите Add Package.
 
 Ссылка на внешний репозиторий: 
 ```ruby

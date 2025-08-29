@@ -32,8 +32,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "BuzzoolaAdsSDK",
-            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDK_3.3.1.xcframework.zip",
-            checksum: "fb194207f8fc4b77f27d710370a1838f89de68f1bf48aecaa3811b2a1ece9575"),
+            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDK_3.3.2.xcframework.zip",
+            checksum: "6488a703ea31b5ee53be9355bd1dae478060ce0fa0b6d9e74fdef5d72c1305ff"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKMyTarget",
             url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKMyTarget_3.3.0.xcframework.zip",
