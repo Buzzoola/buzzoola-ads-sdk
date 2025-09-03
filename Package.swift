@@ -41,11 +41,11 @@ let package = Package(
             checksum: "6488a703ea31b5ee53be9355bd1dae478060ce0fa0b6d9e74fdef5d72c1305ff"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKMyTarget",
-            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKMyTarget_3.3.0_test.xcframework.zip",
+            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKMyTarget_3.3.0.xcframework.zip",
             checksum: "07ad735635128ec04cca1f6c9fe4b31631412cf86ea24f591fccefafb06eff2e"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKAnalytics",
-            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKAnalytics_3.3.0_test.xcframework.zip",
+            url: "https://ru-msk-1.store.cloud.mts.ru/monetization.download/repository/ios-sdk/BuzzoolaAdsSDKAnalytics_3.3.0.xcframework.zip",
             checksum: "a1f3172161f6dc71126100f41710bf75b693bd0daf1abc39b69d6c69c6500e1c"),
         .target(
             name: "BuzzoolaAdsSDKYandex",
