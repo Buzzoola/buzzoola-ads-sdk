@@ -15,6 +15,8 @@ class NativeAdYandexView: YMANativeAdView {
 
     var nativeAdView: NativeAdView
 
+    private var nativeAdViewSuperview: UIView?
+
     // MARK: Initialization
 
     init(nativeAdView: NativeAdView) {
@@ -29,6 +31,49 @@ class NativeAdYandexView: YMANativeAdView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    func destroy() {
+        nativeAdView.removeFromSuperview()
+        nativeAdView.adMedia?.content?.removeFromSuperview()
+        nativeAdView.adMedia?.backgroundColor = .clear
+        nativeAdView.adInfo?.removeTarget(nil, action: nil, for: .allEvents)
+        nativeAdView.adActionBtn?.removeTarget(nil, action: nil, for: .allEvents)
+        nativeAdView.gestureRecognizers?.removeAll()
+        nativeAdView.adTitle?.gestureRecognizers?.removeAll()
+        nativeAdView.adDescription?.gestureRecognizers?.removeAll()
+        nativeAdView.adMedia?.gestureRecognizers?.removeAll()
+        gestureRecognizers?.removeAll()
+
+        nativeAdView.adTitle?.text = ""
+        nativeAdView.adDomain?.text = ""
+        nativeAdView.adBadge?.text = ""
+        nativeAdView.adAge?.text = ""
+        nativeAdView.adPrice?.text = ""
+        nativeAdView.adDescription?.text = ""
+        nativeAdView.adWarning?.text = ""
+        nativeAdView.adReviews?.text = ""
+        nativeAdView.adFavicon?.image = nil
+        nativeAdView.adIcon?.image = nil
+        nativeAdView.adRating?.setRating(0)
+        nativeAdView.adActionBtn?.setTitle("", for: .normal)
+
+        guard
+            let nativeAdViewSuperview
+        else {
+            return
+        }
+
+        nativeAdViewSuperview.addSubview(nativeAdView)
+
+        NSLayoutConstraint.activate([
+            nativeAdViewSuperview.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            nativeAdViewSuperview.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            nativeAdViewSuperview.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            nativeAdViewSuperview.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor)
+        ])
+
+        removeFromSuperview()
+    }
 }
 
 // MARK: - Private functions
@@ -36,7 +81,9 @@ class NativeAdYandexView: YMANativeAdView {
 private extension NativeAdYandexView {
 
     func configure() {
-        nativeAdView.superview?.addSubview(self)
+        nativeAdViewSuperview = nativeAdView.superview
+
+        nativeAdViewSuperview?.addSubview(self)
         addSubview(nativeAdView)
 
         translatesAutoresizingMaskIntoConstraints = false

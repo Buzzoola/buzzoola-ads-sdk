@@ -31,15 +31,19 @@ final class BannerYandexAdView: UIView, BannerAdViewProtocol {
 
     private var model: AdsMeditationItemModel?
 
-    public weak var delegate: BannerAdEventProtocol?
+    public weak var delegate: BannerCurrentAdEventProtocol?
 
     weak var failedDelegate: BannerYandexAdViewLoaderDelegate?
-
-    private var startDate: Date?
 
     private var isFirstEventClick = true
 
     private var impressionData: String?
+
+    private var isImpression = false
+
+    private var isLoaded = false
+
+    private var isFailed = false
 
     // MARK: Initializers
 
@@ -57,6 +61,35 @@ final class BannerYandexAdView: UIView, BannerAdViewProtocol {
         NotificationCenter.default.removeObserver(self,
             name: UIApplication.didBecomeActiveNotification,
             object: nil)
+
+        guard
+            !isFailed
+        else {
+            return
+        }
+
+        var impressionLocalError: ImpressionError?
+
+        if !isLoaded {
+            impressionLocalError = .notStarted
+        } else if !isImpression {
+            impressionLocalError = .unknownReason
+        }
+
+        if let impressionLocalError = impressionLocalError {            BuzzoolaAdsAnalyticsManager.shared.track(
+                eventName: "ad-impression_error-in_app",
+                parameters: [
+                    "eventCategory" : "ad",
+                    "eventAction" : "impression_error",
+                    "eventLabel" : "in_app",
+                    "eventContent" : "banner",
+                    "eventContext" : "yandex",
+                    "filterName": impressionLocalError.filterName,
+                    "bannerName" : impressionLocalError.bannerName,
+                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + (model?.index.description ?? ""),
+                    "CD1" : model?.placementID.description ?? ""
+                ])
+        }
     }
 }
 
@@ -85,21 +118,6 @@ extension BannerYandexAdView {
         adRequest.age = request.age as? NSNumber
         adRequest.adTheme = request.isDarkMode ? .dark : .light
 
-        startDate = Date()
-        
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "request-send-from_sdk_to_adapter",
-            parameters: [
-                "eventCategory" : "request",
-                "eventAction" : "send",
-                "eventLabel" : "from_sdk_to_adapter",
-                "eventValue" : "1",
-                "eventContent" : "banner",
-                "eventContext" : "yandex",
-                "CD1" : request.placementID.description
-            ]
-        )
-
         adView.loadAd(with: adRequest)
     }
 }
@@ -109,34 +127,26 @@ extension BannerYandexAdView {
 extension BannerYandexAdView: AdViewDelegate {
 
     func adViewDidLoad(_ adView: AdView) {
+        isLoaded = true
+
         guard
-            let model = model,
-            let startDate = startDate
+            let model = model
         else {
             return
         }
 
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "1",
-                "eventContent" : "banner",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
-                "filterName": model.amount.description,
-                "bannerName": "[null_null]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
-                "CD1" : model.placementID.description
-            ]
-        )
-
         let load = eventsURLs?.load ?? []
 
         for url in load {
-            AdRequestSender.shared.makeEventsRequest(request: .init(type: .load, url: url, adSeqNumber: 1))
+            AdRequestSender.shared.makeEventsRequest(
+                request: .init(
+                    adType: .banner,
+                    placementID: model.placementID,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    type: .load,
+                    url: url,
+                    adSeqNumber: 1,
+                    count: load.count))
         }
 
         BuzzoolaAdsAnalyticsManager.shared.track(
@@ -169,7 +179,15 @@ extension BannerYandexAdView: AdViewDelegate {
         let click = eventsURLs?.click ?? []
 
         for url in click {
-            AdRequestSender.shared.makeEventsRequest(request: .init(type: .click, url: url, adSeqNumber: 1))
+            AdRequestSender.shared.makeEventsRequest(
+                request: .init(
+                    adType: .banner,
+                    placementID: model.placementID,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    type: .click,
+                    url: url,
+                    adSeqNumber: 1,
+                    count: click.count))
         }
 
         var parameters = [
@@ -196,6 +214,8 @@ extension BannerYandexAdView: AdViewDelegate {
     }
 
     func adView(_ adView: AdView, didTrackImpression impressionData: ImpressionData?) {
+        isImpression = true
+        
         delegate?.onImpression(impressionData?.rawData)
 
         self.impressionData = impressionData?.rawData
@@ -209,7 +229,15 @@ extension BannerYandexAdView: AdViewDelegate {
         let impression = eventsURLs?.impression ?? []
 
         for url in impression {
-            AdRequestSender.shared.makeEventsRequest(request: .init(type: .impression, url: url, adSeqNumber: 1))
+            AdRequestSender.shared.makeEventsRequest(
+                request: .init(
+                    adType: .banner,
+                    placementID: model.placementID,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    type: .impression,
+                    url: url,
+                    adSeqNumber: 1,
+                    count: impression.count))
         }
 
         var parameters = [
@@ -234,30 +262,13 @@ extension BannerYandexAdView: AdViewDelegate {
     }
 
     func adViewDidFailLoading(_ adView: AdView, error: Error) {
+        isFailed = true
+
         guard
-            let model = model,
-            let startDate = startDate
+            let model = model
         else {
             return
         }
-    
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "0",
-                "eventContent" : "banner",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
-                "filterName": model.amount.description,
-                "bannerName": "[]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
-                "deliveryType": error.localizedDescription,
-                "CD1" : model.placementID.description
-            ]
-        )
 
         failedDelegate?.bannerAdViewFailed(adError: .loadMediationError(error.localizedDescription))
     }

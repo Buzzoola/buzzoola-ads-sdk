@@ -34,27 +34,6 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
     // MARK: Functions
 
     func loadAd() {
-        guard
-            model.mediationID != ""
-        else {
-            if UserDefaults.standard.bool(forKey: "adsEnableLogging") {
-                print("[Ads SDK] ERROR 🍎 Native Yandex: id is empty")
-            }
-
-            factoryDelegate?.onAdNativeFailed(
-                error: .loadMediationError("Yandex: id is empty"),
-                item: .yandex(model))
-            return
-        }
-        
-        let requestConfiguration = MutableNativeAdRequestConfiguration(adUnitID: model.mediationID)
-
-        requestConfiguration.adTheme = model.isDarkMode ? .dark : .light
-        requestConfiguration.age = model.age as? NSNumber
-        requestConfiguration.gender = model.gender?.rawValue
-
-        adLoader.loadAds(with: requestConfiguration, adsCount: model.amount)
-
         startDate = Date()
 
         BuzzoolaAdsAnalyticsManager.shared.track(
@@ -69,6 +48,45 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
                 "CD1" : model.placementID.description
             ]
         )
+
+        guard
+            model.mediationID != ""
+        else {
+            if UserDefaults.standard.bool(forKey: "adsEnableLogging") {
+                print("[Ads SDK] ERROR 🍎 Native Yandex: id is empty")
+            }
+
+            BuzzoolaAdsAnalyticsManager.shared.track(
+                eventName: "response-get-from_adapter_to_sdk",
+                parameters: [
+                    "eventCategory" : "response",
+                    "eventAction" : "get",
+                    "eventLabel" : "from_adapter_to_sdk",
+                    "eventValue" : "0",
+                    "eventContent" : "native",
+                    "eventContext" : "yandex",
+                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedString(),
+                    "filterName": model.amount.description,
+                    "bannerName": "[]",
+                    "bannerID": "[]",
+                    "deliveryType": AdError.loadMediationError("Yandex: id is empty").errorDescription,
+                    "CD1" : model.placementID.description
+                ]
+            )
+
+            factoryDelegate?.onAdNativeFailed(
+                error: .loadMediationError("Yandex: id is empty"),
+                item: .yandex(model))
+            return
+        }
+        
+        let requestConfiguration = MutableNativeAdRequestConfiguration(adUnitID: model.mediationID)
+
+        requestConfiguration.adTheme = model.isDarkMode ? .dark : .light
+        requestConfiguration.age = model.age as? NSNumber
+        requestConfiguration.gender = model.gender?.rawValue
+
+        adLoader.loadAds(with: requestConfiguration, adsCount: model.amount)
     }
 }
 

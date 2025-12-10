@@ -41,11 +41,41 @@ final class NativeAdYandex: BaseNativeAd, BuzzoolaAdsSDK.NativeAd {
 
     private var impressionData: String?
 
+    private var isImpression = false
+
+    private var isLoaded = false
+
     // MARK: Initializer
 
     init(model: AdsMeditationItemModel, ad: YandexMobileAds.NativeAd) {
         self.model = model
         self.ad = ad
+    }
+
+    deinit {
+        var impressionLocalError: ImpressionError?
+
+        if !isLoaded {
+            impressionLocalError = .notStarted
+        } else if !isImpression {
+            impressionLocalError = .unknownReason
+        }
+
+        if let impressionLocalError = impressionLocalError {
+            BuzzoolaAdsAnalyticsManager.shared.track(
+                eventName: "ad-impression_error-in_app",
+                parameters: [
+                    "eventCategory" : "ad",
+                    "eventAction" : "impression_error",
+                    "eventLabel" : "in_app",
+                    "eventContent" : "native",
+                    "eventContext" : "yandex",
+                    "filterName": impressionLocalError.filterName,
+                    "bannerName" : impressionLocalError.bannerName,
+                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    "CD1" : model.placementID.description
+                ])
+        }
     }
 
     // MARK: Functions
@@ -56,13 +86,23 @@ final class NativeAdYandex: BaseNativeAd, BuzzoolaAdsSDK.NativeAd {
         ad.loadImages()
         ad.add(self)
 
+        isLoaded = true
+        
         configureAssets(ad: ad)
         delegate?.onAdLoaded(self)
 
         let load = model.eventURLs.load
 
         for url in load {
-            AdRequestSender.shared.makeEventsRequest(request: .init(type: .load, url: url, adSeqNumber: model.index))
+            AdRequestSender.shared.makeEventsRequest(
+                request: .init(
+                    adType: .native,
+                    placementID: model.placementID,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    type: .load,
+                    url: url,
+                    adSeqNumber: model.index,
+                    count: load.count))
         }
 
         BuzzoolaAdsAnalyticsManager.shared.track(
@@ -91,9 +131,10 @@ final class NativeAdYandex: BaseNativeAd, BuzzoolaAdsSDK.NativeAd {
     }
 
     func destroy() {
-        adView?.removeFromSuperview()
+        adView?.destroy()
         adView = nil
 
+        ad.delegate = nil
         ad.remove(self)
 
         NotificationCenter.default.removeObserver(self,
@@ -155,7 +196,15 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
             let click = model.eventURLs.click
 
             for url in click {
-                AdRequestSender.shared.makeEventsRequest(request: .init(type: .click, url: url, adSeqNumber: model.index))
+                AdRequestSender.shared.makeEventsRequest(
+                    request: .init(
+                        adType: .native,
+                        placementID: model.placementID,
+                        creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                        type: .click,
+                        url: url,
+                        adSeqNumber: model.index,
+                        count: click.count))
             }
 
             var parameters = [
@@ -189,13 +238,23 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
     }
 
     func nativeAd(_ ad: YandexMobileAds.NativeAd, didTrackImpressionWith impressionData: ImpressionData?) {
+        isImpression = true
+
         delegate?.onImpression(self, impressionData?.rawData)
         self.impressionData = impressionData?.rawData
 
         let impression = model.eventURLs.impression
 
         for url in impression {
-            AdRequestSender.shared.makeEventsRequest(request: .init(type: .impression, url: url, adSeqNumber: model.index))
+            AdRequestSender.shared.makeEventsRequest(
+                request: .init(
+                    adType: .native,
+                    placementID: model.placementID,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    type: .impression,
+                    url: url,
+                    adSeqNumber: model.index,
+                    count: impression.count))
         }
 
         var parameters = [
@@ -257,6 +316,6 @@ extension NativeAdYandex: NativeAdImageLoadingObserver {
 
         let color = media?.imageValue?.getColors()
 
-        imageDelegate?.onImageLoaded(color: color?.background)
+        imageDelegate?.onImageLoaded(ad: self, color: color?.background)
     }
 }

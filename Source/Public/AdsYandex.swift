@@ -18,11 +18,9 @@ public final class AdsYandex {
         if AdsYandex.initialized {
             completion()
         } else {
-            MobileAds.initializeSDK {
-                DispatchQueue.main.async {
-                    completion()
-                }
-            }
+            MobileAds.initializeSDK { }
+
+            completion()
 
             AdsYandex.initialized = true
         }
