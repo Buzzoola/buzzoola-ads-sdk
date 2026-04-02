@@ -35,8 +35,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "BuzzoolaAdsSDK",
-            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.4.0.1.xcframework.zip",
-            checksum: "6f62aad0804aa7884b1030275b3551b666fc24a6a160d5da531c58a5367abeff"),
+            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.4.0.2.xcframework.zip",
+            checksum: "7ca5ec98f381d4e1bbaff66768fc56ca352239a91d5b1200595db562ee597e76"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKMyTarget",
             url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.mytarget.4.0.0.xcframework.zip",
