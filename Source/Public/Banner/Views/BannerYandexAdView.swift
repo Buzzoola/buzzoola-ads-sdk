@@ -280,7 +280,7 @@ extension BannerYandexAdView: AdViewDelegate {
     }
 
     func close(_ adView: AdView) {
-        adView.isHidden = true
+        delegate?.onCloseAd()
     }
 }
 
