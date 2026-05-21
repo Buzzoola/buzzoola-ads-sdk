@@ -1,31 +1,31 @@
 //
-//  InterstitialAdYandex.swift
-//  BuzzoolaAdsSDKYandex
+//  AppOpenAdYandex.swift
+//  BuzzoolaAdsSDK
 //
-//  Created by Коротаева Елена Сергеевна on 19.08.2024.
+//  Created by Коротаева Елена Сергеевна on 23.12.2025.
 //
 
 import Foundation
 import YandexMobileAds
 import BuzzoolaAdsSDK
 
-final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.InterstitialAd {
+final class AppOpenAdYandex: BaseAppOpenAd, BuzzoolaAdsSDK.AppOpenAd {
 
     // MARK: Properties
 
-    weak var factoryDelegate: InterstitialAdFactoryDelegate?
+    weak var factoryDelegate: AppOpenAdFactoryDelegate?
 
     // MARK: Private properties
 
     private let model: AdsMeditationItemModel
 
-    private lazy var adLoader: YandexMobileAds.InterstitialAdLoader = {
-        let adLoader = YandexMobileAds.InterstitialAdLoader()
+    private lazy var adLoader: YandexMobileAds.AppOpenAdLoader = {
+        let adLoader = YandexMobileAds.AppOpenAdLoader()
         adLoader.delegate = self
         return adLoader
     }()
 
-    private var interstitialAd: YandexMobileAds.InterstitialAd?
+    private var appOpenAd: YandexMobileAds.AppOpenAd?
 
     private var startDate: Date?
 
@@ -67,7 +67,7 @@ final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.Interstitia
                     "eventCategory" : "ad",
                     "eventAction" : "impression_error",
                     "eventLabel" : "in_app",
-                    "eventContent" : "interstitial",
+                    "eventContent" : "appopen",
                     "eventContext" : "yandex",
                     "filterName": impressionLocalError.filterName,
                     "bannerName" : impressionLocalError.bannerName,
@@ -76,7 +76,7 @@ final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.Interstitia
                 ])
         }
     }
-
+    
     // MARK: Functions
 
     func loadAd() {
@@ -99,9 +99,9 @@ final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.Interstitia
             model.mediationID != ""
         else {
             isFailed = true
-            
+
             if UserDefaults.standard.bool(forKey: "adsEnableLogging") {
-                print("[Ads SDK] ERROR 🍎 Interstitial Yandex: id is empty")
+                print("[Ads SDK] ERROR 🍎 AppOpenAd Yandex: id is empty")
             }
 
             BuzzoolaAdsAnalyticsManager.shared.track(
@@ -111,7 +111,7 @@ final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.Interstitia
                     "eventAction" : "get",
                     "eventLabel" : "from_adapter_to_sdk",
                     "eventValue" : "0",
-                    "eventContent" : "interstitial",
+                    "eventContent" : "appopen",
                     "eventContext" : "yandex",
                     "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedStringBuzzoola(),
                     "filterName": model.amount.description,
@@ -122,7 +122,7 @@ final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.Interstitia
                 ]
             )
 
-            factoryDelegate?.onAdInterstitialFailed(
+            factoryDelegate?.onAdAppOpenAdFailed(
                 error: .loadMediationError("Yandex: id is empty"),
                 item: .yandex(model))
             return
@@ -148,18 +148,18 @@ final class InterstitialAdYandex: BaseInterstitialAd, BuzzoolaAdsSDK.Interstitia
             return
         }
 
-        interstitialAd?.show(from: viewController)
+        appOpenAd?.show(from: viewController)
     }
 }
 
-// MARK: - InterstitialAdLoaderDelegate
+// MARK: - AppOpenAdLoaderDelegate
 
-extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
+extension AppOpenAdYandex: AppOpenAdLoaderDelegate {
 
-    func interstitialAdLoader(_ adLoader: YandexMobileAds.InterstitialAdLoader, didLoad interstitialAd: YandexMobileAds.InterstitialAd) {
+    func appOpenAdLoader(_ adLoader: YandexMobileAds.AppOpenAdLoader, didLoad appOpenAd: YandexMobileAds.AppOpenAd) {
         isLoaded = true
-        self.interstitialAd = interstitialAd
-        self.interstitialAd?.delegate = self
+        self.appOpenAd = appOpenAd
+        self.appOpenAd?.delegate = self
 
         guard
             let startDate = startDate
@@ -174,7 +174,7 @@ extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
                 "eventAction" : "get",
                 "eventLabel" : "from_adapter_to_sdk",
                 "eventValue" : "1",
-                "eventContent" : "interstitial",
+                "eventContent" : "appopen",
                 "eventContext" : "yandex",
                 "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
@@ -190,7 +190,7 @@ extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
                 "eventCategory" : "ad",
                 "eventAction" : "load",
                 "eventLabel" : "in_app",
-                "eventContent" : "interstitial",
+                "eventContent" : "appopen",
                 "eventContext" : "yandex",
                 "bannerName" : "null_null",
                 "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
@@ -203,7 +203,7 @@ extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
         for url in load {
             AdRequestSender.shared.makeEventsRequest(
                 request: .init(
-                    adType: .interstitial,
+                    adType: .appOpenAd,
                     placementID: model.placementID,
                     creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .load,
@@ -215,7 +215,7 @@ extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
         factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
     }
     
-    func interstitialAdLoader(_ adLoader: YandexMobileAds.InterstitialAdLoader, didFailToLoadWithError error: YandexMobileAds.AdRequestError) {
+    func appOpenAdLoader(_ adLoader: YandexMobileAds.AppOpenAdLoader, didFailToLoadWithError error: YandexMobileAds.AdRequestError) {
         isFailed = true
 
         guard
@@ -231,7 +231,7 @@ extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
                 "eventAction" : "get",
                 "eventLabel" : "from_adapter_to_sdk",
                 "eventValue" : "0",
-                "eventContent" : "interstitial",
+                "eventContent" : "appopen",
                 "eventContext" : "yandex",
                 "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
@@ -242,32 +242,24 @@ extension InterstitialAdYandex: InterstitialAdLoaderDelegate {
             ]
         )
 
-        factoryDelegate?.onAdInterstitialFailed(
+        factoryDelegate?.onAdAppOpenAdFailed(
             error: AdError.loadMediationError(error.error.localizedDescription),
             item: .yandex(model))
     }
 }
 
-// MARK: - InterstitialAdDelegate
+// MARK: - AppOpenAdDelegate
 
-extension InterstitialAdYandex: YandexMobileAds.InterstitialAdDelegate {
+extension AppOpenAdYandex: YandexMobileAds.AppOpenAdDelegate {
 
-    func interstitialAd(_ interstitialAd: YandexMobileAds.InterstitialAd, didFailToShowWithError error: any Error) {
-        isFailed = true
-        delegate?.onAdFailed(adError: .loadMediationError(error.localizedDescription))
-    }
-
-    func interstitialAd(_ interstitialAd: YandexMobileAds.InterstitialAd, didTrackImpressionWith impressionData: (any ImpressionData)?) {
-        isImpression = true
-
-        delegate?.onImpression(impressionData?.rawData)
-        self.impressionData = impressionData?.rawData
+    func appOpenAdDidDismiss(_ appOpenAd: YandexMobileAds.AppOpenAd) {
+        delegate?.appOpenAdDidDismiss()
 
         var parameters = [
             "eventCategory" : "ad",
-            "eventAction" : "show",
+            "eventAction" : "close",
             "eventLabel" : "in_app",
-            "eventContent" : "interstitial",
+            "eventContent" : "appopen",
             "eventContext" : "yandex",
             "bannerName" : "null_null",
             "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
@@ -279,31 +271,24 @@ extension InterstitialAdYandex: YandexMobileAds.InterstitialAdDelegate {
         }
 
         BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "ad-show-in_app",
+            eventName: "ad-close-in_app",
             parameters: parameters
         )
-        
-        let impression = model.eventURLs.impression
-
-        for url in impression {
-            AdRequestSender.shared.makeEventsRequest(
-                request: .init(
-                    adType: .interstitial,
-                    placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
-                    type: .impression,
-                    url: url,
-                    adSeqNumber: model.index,
-                    count: impression.count))
-        }
     }
 
-    func interstitialAdDidShow(_ interstitialAd: YandexMobileAds.InterstitialAd) {
-        delegate?.onAdShown()
+    func appOpenAd(
+        _ appOpenAd: YandexMobileAds.AppOpenAd,
+        didFailToShowWithError error: Error
+    ) {
+        isFailed = true
+        delegate?.appOpenAd(didFailToShowWithError: .loadMediationError(error.localizedDescription))
     }
 
-    func interstitialAdDidClick(_ interstitialAd: YandexMobileAds.InterstitialAd) {
-        delegate?.onAdClicked()
+    func appOpenAdDidShow(_ appOpenAd: YandexMobileAds.AppOpenAd) {      delegate?.appOpenAdDidShow()
+    }
+
+    func appOpenAdDidClick(_ appOpenAd: YandexMobileAds.AppOpenAd) {
+        delegate?.appOpenAdDidClick()
 
         if isFirstEventClick {
 
@@ -311,7 +296,7 @@ extension InterstitialAdYandex: YandexMobileAds.InterstitialAdDelegate {
                 "eventCategory" : "ad",
                 "eventAction" : "click",
                 "eventLabel" : "in_app",
-                "eventContent" : "interstitial",
+                "eventContent" : "appopen",
                 "eventContext" : "yandex",
                 "bannerName" : "null_null",
                 "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
@@ -332,7 +317,7 @@ extension InterstitialAdYandex: YandexMobileAds.InterstitialAdDelegate {
             for url in click {
                 AdRequestSender.shared.makeEventsRequest(
                     request: .init(
-                        adType: .interstitial,
+                        adType: .appOpenAd,
                         placementID: model.placementID,
                         creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                         type: .click,
@@ -345,14 +330,17 @@ extension InterstitialAdYandex: YandexMobileAds.InterstitialAdDelegate {
         }
     }
 
-    func interstitialAdDidDismiss(_ interstitialAd: YandexMobileAds.InterstitialAd) {
-        delegate?.onAdDismissed()
+    func appOpenAd(_ appOpenAd: YandexMobileAds.AppOpenAd, didTrackImpressionWith impressionData: ImpressionData?) {
+        isImpression = true
+
+        delegate?.appOpenAd(didTrackImpressionWith: impressionData?.rawData)
+        self.impressionData = impressionData?.rawData
 
         var parameters = [
             "eventCategory" : "ad",
-            "eventAction" : "close",
+            "eventAction" : "show",
             "eventLabel" : "in_app",
-            "eventContent" : "interstitial",
+            "eventContent" : "appopen",
             "eventContext" : "yandex",
             "bannerName" : "null_null",
             "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
@@ -364,8 +352,22 @@ extension InterstitialAdYandex: YandexMobileAds.InterstitialAdDelegate {
         }
 
         BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "ad-close-in_app",
+            eventName: "ad-show-in_app",
             parameters: parameters
         )
+
+        let impression = model.eventURLs.impression
+
+        for url in impression {
+            AdRequestSender.shared.makeEventsRequest(
+                request: .init(
+                    adType: .appOpenAd,
+                    placementID: model.placementID,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
+                    type: .impression,
+                    url: url,
+                    adSeqNumber: model.index,
+                    count: impression.count))
+        }
     }
 }

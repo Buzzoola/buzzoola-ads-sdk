@@ -72,7 +72,7 @@ final class NativeAdYandex: BaseNativeAd, BuzzoolaAdsSDK.NativeAd {
                     "eventContext" : "yandex",
                     "filterName": impressionLocalError.filterName,
                     "bannerName" : impressionLocalError.bannerName,
-                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     "CD1" : model.placementID.description
                 ])
         }
@@ -98,7 +98,7 @@ final class NativeAdYandex: BaseNativeAd, BuzzoolaAdsSDK.NativeAd {
                 request: .init(
                     adType: .native,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .load,
                     url: url,
                     adSeqNumber: model.index,
@@ -114,7 +114,7 @@ final class NativeAdYandex: BaseNativeAd, BuzzoolaAdsSDK.NativeAd {
                 "eventContent" : "native",
                 "eventContext" : "yandex",
                 "bannerName" : (ad.adAssets().domain ?? "null") + "_" + (ad.adAssets().title ?? "null"),
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                 "CD1" : model.placementID.description
             ]
         )
@@ -200,7 +200,7 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
                     request: .init(
                         adType: .native,
                         placementID: model.placementID,
-                        creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                        creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                         type: .click,
                         url: url,
                         adSeqNumber: model.index,
@@ -214,7 +214,7 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
                 "eventContent" : "native",
                 "eventContext" : "yandex",
                 "bannerName" : (ad.adAssets().domain ?? "null") + "_" + (ad.adAssets().title ?? "null"),
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                 "CD1" : model.placementID.description
             ]
 
@@ -250,7 +250,7 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
                 request: .init(
                     adType: .native,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .impression,
                     url: url,
                     adSeqNumber: model.index,
@@ -264,7 +264,7 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
             "eventContent" : "native",
             "eventContext" : "yandex",
             "bannerName" : (ad.adAssets().domain ?? "null") + "_" + (ad.adAssets().title ?? "null"),
-            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
             "CD1" : model.placementID.description
         ]
 
@@ -288,7 +288,7 @@ extension NativeAdYandex: YandexMobileAds.NativeAdDelegate {
             "eventContent" : "native",
             "eventContext" : "yandex",
             "bannerName" : (ad.adAssets().domain ?? "null") + "_" + (ad.adAssets().title ?? "null"),
-            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
             "CD1" : model.placementID.description
         ]
 
@@ -315,6 +315,8 @@ extension NativeAdYandex: NativeAdImageLoadingObserver {
         adAssets.favicon = ad.adAssets().favicon?.imageValue
 
         let color = media?.imageValue?.getColors()
+
+        adView?.nativeAdView.adMedia?.backgroundColor = color?.background
 
         imageDelegate?.onImageLoaded(ad: self, color: color?.background)
     }

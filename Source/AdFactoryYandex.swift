@@ -63,6 +63,13 @@ class AdFactoryYandex: NSObject, AdFactory {
         return rewardedAd
     }
 
+    func createAppOpenAd() -> AppOpenAd? {
+        let appOpenAd = AppOpenAdYandex(model: model)
+
+        appOpenAd.factoryDelegate = delegate
+        return appOpenAd
+    }
+
     func configure(completion: @escaping () -> ()) {
         AdsYandex.configure {
             completion()

@@ -86,7 +86,7 @@ final class BannerYandexAdView: UIView, BannerAdViewProtocol {
                     "eventContext" : "yandex",
                     "filterName": impressionLocalError.filterName,
                     "bannerName" : impressionLocalError.bannerName,
-                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + (model?.index.description ?? ""),
+                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + (model?.index.description ?? ""),
                     "CD1" : model?.placementID.description ?? ""
                 ])
         }
@@ -142,7 +142,7 @@ extension BannerYandexAdView: AdViewDelegate {
                 request: .init(
                     adType: .banner,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .load,
                     url: url,
                     adSeqNumber: 1,
@@ -158,7 +158,7 @@ extension BannerYandexAdView: AdViewDelegate {
                 "eventContent" : "banner",
                 "eventContext" : "yandex",
                 "bannerName" : "null_null",
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                 "CD1" : model.placementID.description
             ]
         )
@@ -183,7 +183,7 @@ extension BannerYandexAdView: AdViewDelegate {
                 request: .init(
                     adType: .banner,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .click,
                     url: url,
                     adSeqNumber: 1,
@@ -197,7 +197,7 @@ extension BannerYandexAdView: AdViewDelegate {
             "eventContent" : "banner",
             "eventContext" : "yandex",
             "bannerName" : "null_null",
-            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
             "CD1" : model.placementID.description
         ]
 
@@ -233,7 +233,7 @@ extension BannerYandexAdView: AdViewDelegate {
                 request: .init(
                     adType: .banner,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .impression,
                     url: url,
                     adSeqNumber: 1,
@@ -247,7 +247,7 @@ extension BannerYandexAdView: AdViewDelegate {
             "eventContent" : "banner",
             "eventContext" : "yandex",
             "bannerName" : "null_null",
-            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
             "CD1" : model.placementID.description
         ]
 

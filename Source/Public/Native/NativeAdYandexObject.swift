@@ -65,7 +65,7 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
                     "eventValue" : "0",
                     "eventContent" : "native",
                     "eventContext" : "yandex",
-                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedString(),
+                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedStringBuzzoola(),
                     "filterName": model.amount.description,
                     "bannerName": "[]",
                     "bannerID": "[]",
@@ -100,14 +100,25 @@ extension NativeAdYandexObject: NativeBulkAdLoaderDelegate {
         var listPaymentType = [String]()
 
         ads.enumerated().forEach { number, ad in
-            model.index = number + 1
-            let adItem = NativeAdYandex(model: model, ad: ad)
+            let bulkModel = AdsMeditationItemModel(
+                index: number + 1,
+                placementID: model.placementID,
+                mediationID: model.mediationID,
+                width: model.width,
+                height: model.height,
+                eventURLs: model.eventURLs,
+                gender: model.gender,
+                age: model.age,
+                amount: model.amount,
+                isDarkMode: model.isDarkMode)
+
+            let adItem = NativeAdYandex(model: bulkModel, ad: ad)
             self.ads.append(adItem)
 
             let bannerName = (ad.adAssets().domain ?? "null") + "_" + (ad.adAssets().title ?? "null")
             listBannerName.append(bannerName)
 
-            let bannerID = "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description
+            let bannerID = "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + bulkModel.index.description
             listBannerID.append(bannerID)
 
             listPaymentType.append(ad.adAssets().price ?? "null")
@@ -128,7 +139,7 @@ extension NativeAdYandexObject: NativeBulkAdLoaderDelegate {
                 "eventValue" : ads.count.description,
                 "eventContent" : "native",
                 "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
+                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
                 "bannerName": "[" + listBannerName.joined(separator: ", ") + "]",
                 "bannerID": "[" + listBannerID.joined(separator: ", ") + "]",
@@ -155,7 +166,7 @@ extension NativeAdYandexObject: NativeBulkAdLoaderDelegate {
                 "eventValue" : "0",
                 "eventContent" : "native",
                 "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
+                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
                 "bannerName": "[]",
                 "bannerID": "[]",

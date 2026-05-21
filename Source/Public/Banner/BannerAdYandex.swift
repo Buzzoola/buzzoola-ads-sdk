@@ -62,10 +62,10 @@ final class BannerAdYandex: BannerAd {
                     "eventValue" : "0",
                     "eventContent" : "banner",
                     "eventContext" : "yandex",
-                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedString(),
+                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedStringBuzzoola(),
                     "filterName": model.amount.description,
                     "bannerName": "[]",
-                    "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
+                    "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
                     "deliveryType": AdError.loadMediationError("Yandex: id is empty").errorDescription,
                     "CD1" : model.placementID.description
                 ]
@@ -105,10 +105,10 @@ extension BannerAdYandex: BannerYandexAdViewLoaderDelegate {
                 "eventValue" : "1",
                 "eventContent" : "banner",
                 "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
+                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
                 "bannerName": "[null_null]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
+                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
                 "CD1" : model.placementID.description
             ]
         )
@@ -132,10 +132,10 @@ extension BannerAdYandex: BannerYandexAdViewLoaderDelegate {
                 "eventValue" : "0",
                 "eventContent" : "banner",
                 "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
+                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
                 "bannerName": "[]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
+                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
                 "deliveryType": adError.errorDescription,
                 "CD1" : model.placementID.description
             ]

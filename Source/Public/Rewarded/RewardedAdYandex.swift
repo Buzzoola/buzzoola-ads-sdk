@@ -71,7 +71,7 @@ final class RewardedAdYandex: BaseRewardedAd, BuzzoolaAdsSDK.RewardedAd {
                     "eventContext" : "yandex",
                     "filterName": impressionLocalError.filterName,
                     "bannerName" : impressionLocalError.bannerName,
-                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     "CD1" : model.placementID.description
                 ])
         }
@@ -113,10 +113,10 @@ final class RewardedAdYandex: BaseRewardedAd, BuzzoolaAdsSDK.RewardedAd {
                     "eventValue" : "0",
                     "eventContent" : "rewarded",
                     "eventContext" : "yandex",
-                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedString(),
+                    "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedStringBuzzoola(),
                     "filterName": model.amount.description,
                     "bannerName": "[]",
-                    "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
+                    "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
                     "deliveryType": AdError.loadMediationError("Yandex: id is empty").errorDescription,
                     "CD1" : model.placementID.description
                 ])
@@ -174,10 +174,10 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdLoaderDelegate {
                 "eventValue" : "1",
                 "eventContent" : "rewarded",
                 "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
+                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
                 "bannerName": "[null_null]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
+                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
                 "CD1" : model.placementID.description
             ]
         )
@@ -203,10 +203,10 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdLoaderDelegate {
                 "eventValue" : "0",
                 "eventContent" : "rewarded",
                 "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedString(),
+                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
                 "filterName": model.amount.description,
                 "bannerName": "[]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description + "]",
+                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
                 "deliveryType": error.error.localizedDescription,
                 "CD1" : model.placementID.description
             ]
@@ -231,7 +231,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
                 "eventCategory" : "ad",
                 "eventAction" : "uspeshnoe_poluchenie_voznagrazhdeniya",
                 "eventLabel" : "in_app",
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                 "CD1" : model.placementID.description
             ]
         )
@@ -255,7 +255,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
                 "eventContent" : "rewarded",
                 "eventContext" : "yandex",
                 "bannerName" : "null_null",
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                 "CD1" : model.placementID.description
             ]
         )
@@ -267,7 +267,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
                 request: .init(
                     adType: .rewarded,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .load,
                     url: url,
                     adSeqNumber: model.index,
@@ -287,7 +287,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
             "eventContent" : "rewarded",
             "eventContext" : "yandex",
             "bannerName" : "null_null",
-            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
             "CD1" : model.placementID.description
         ]
 
@@ -312,7 +312,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
                 "eventContent" : "rewarded",
                 "eventContext" : "yandex",
                 "bannerName" : "null_null",
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                 "CD1" : model.placementID.description
             ]
 
@@ -332,7 +332,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
                     request: .init(
                         adType: .rewarded,
                         placementID: model.placementID,
-                        creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                        creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                         type: .click,
                         url: url,
                         adSeqNumber: model.index,
@@ -356,7 +356,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
             "eventContent" : "rewarded",
             "eventContext" : "yandex",
             "bannerName" : "null_null",
-            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+            "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
             "CD1" : model.placementID.description
         ]
 
@@ -376,7 +376,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
                 request: .init(
                     adType: .rewarded,
                     placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedString() + "_" + model.index.description,
+                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
                     type: .impression,
                     url: url,
                     adSeqNumber: model.index,

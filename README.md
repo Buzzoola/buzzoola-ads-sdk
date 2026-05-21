@@ -7,12 +7,13 @@
 - Полноэкранная реклама - формат рекламы, отражающейся на весь экран с видео или с картинкой;
 - Реклама с вознаграждением - полноэкранный формат, за просмотр которого пользователь получает вознаграждение;
 - Instream реклама - формат видеорекламы, в котором рекламный ролик встраивается в видеопоток и проигрывается по заданному сценарию: перед основным видео, в середине или в конце.
+- AppOpenAd реклама - формат всплывающей рекламы с видео или с картинкой, отражается только портретно. Используется при открытии приложения или межстранично. 
 
 # Тех. информация
 
 ## Текущая версия
 
-Версия: 4.1.0
+Версия: 4.2.0
 
 ## Требования для установки SDK
 
@@ -27,50 +28,48 @@
 Варианты установки:
 1. Чтобы добавить библиотеку в проект c рекламой Buzzoola, ВК и Яндекс, добавьте в свой Podfile:
 ```ruby
-pod 'BuzzoolaAdsSDK', '4.1.0'
-pod 'BuzzoolaAdsSDKYandex', '4.1.0'
+pod 'BuzzoolaAdsSDK', '4.2.0'
+pod 'BuzzoolaAdsSDKYandex', '4.2.0'
 ```
 2. Если вы хотите использовать рекламу Buzzoola и ВК:
 ```ruby
-pod 'BuzzoolaAdsSDK', '4.1.0'
+pod 'BuzzoolaAdsSDK', '4.2.0'
 ```
 3. Если вы хотите использовать только рекламу Buzzoola: 
 ```ruby
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '4.1.0'
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDKAnalytics', '4.1.0'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '4.2.0'
 ```
 
 Для корректной работы так же обязательно указать в Podfile:
 ```ruby
 install! 'cocoapods', :disable_input_output_paths => true # для отсутствия конфликтов с Assets
 source 'https://github.com/Buzzoola/buzzoola-ads-sdk' # ссылка на спецификацию BuzzoolaAdsSDK
-source 'https://github.com/MobileTeleSystems/mts-analytics-podspecs' # ссылка на спецификацию Аналитики
 source 'https://github.com/CocoaPods/Specs.git' # ссылка на общие спецификации
 ```
 
 ## Swift Package Manager
 
-Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 4.1.0 или задайте ее вручную, а после нажмите Add Package.
+Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 4.2.0 или задайте ее вручную, а после нажмите Add Package.
 
 Ссылка на внешний репозиторий: 
 ```ruby
 https://github.com/Buzzoola/buzzoola-ads-sdk
 ```
 
-SDK имеет в себе четыре подмодуля.
+SDK имеет в себе три подмодуля.
 
-1. Если вы хотите использовать только рекламу Buzzoola: подключите в свой проект модуль BuzzoolaAdsSDK и BuzzoolaAdsSDKAnalytics.
+1. Если вы хотите использовать только рекламу Buzzoola: подключите в свой проект модуль BuzzoolaAdsSDK.
 
-2. Если вы хотите использовать рекламу Buzzoola и ВК: подключите в свой проект модуль BuzzoolaAdsSDK, BuzzoolaAdsSDKMyTarget и BuzzoolaAdsSDKAnalytics.
+2. Если вы хотите использовать рекламу Buzzoola и ВК: подключите в свой проект модуль BuzzoolaAdsSDK и BuzzoolaAdsSDKMyTarget.
 
-3. Если вы хотите использовать рекламу Buzzoola, ВК и Яндекс: подключите в свой проект модуль BuzzoolaAdsSDK, BuzzoolaAdsSDKMyTarget, BuzzoolaAdsSDKYandex и BuzzoolaAdsSDKAnalytics.
+3. Если вы хотите использовать рекламу Buzzoola, ВК и Яндекс: подключите в свой проект модуль BuzzoolaAdsSDK, BuzzoolaAdsSDKMyTarget и BuzzoolaAdsSDKYandex.
 
 # Использование SDK
 
 Принцип работы зависит от выбранного формата рекламы. 
 - Баннерная реклама - необходимо создать вью нужного класса, разместить его в своей верстке, загрузить рекламу, и SDK наполнит это вью нужным содержимым;
 - Нативная реклама - необходимо сверстать вью с множеством компонентов (текст, картинки, вью), связать компоненты, загрузить рекламу, и SDK наполнит это вью нужным содержимым;
-- Полноэкранная реклама и реклама с вознаграждением - размещается на отдельном вью контроллере модально на весь экран, необходимо лишь передать нужному методу свой вью контроллер, поверх которого отразится данная реклама;
+- Полноэкранная реклама, реклама с вознаграждением и AppOpenAd реклама - размещается на отдельном вью контроллере модально на весь экран, необходимо лишь передать нужному методу свой вью контроллер, поверх которого отразится данная реклама;
 - Instream реклама - необходимо сверстать плеер, на котором будет показано рекламное видео, связать компоненты, разместить поверх вашего плеера и регулировать видимость, следуя необходимой логике.
 
 ## Инициализация SDK
@@ -104,8 +103,8 @@ Ads().enableLogging(true)
 class AdsRequest
 ```
 
-| Название поля          | Тип поля           | Обязательность         |
-|:-----------------------|:-------------------|:-----------------------|
+| Название поля          | Тип поля           | Обязательность         | Описание                 
+|:-----------------------|:-------------------|:-----------------------|:-----------------------
 | placementID            | Int                | Да                     | ваш уникальный placementID
 | width                  | Int(?)             | Для формата баннер     | максимально допустимая ширина баннера
 | height                 | Int(?)             | Для формата баннер     | максимально допустимая высота баннера
@@ -365,15 +364,15 @@ extension ViewController: NativeAdLoaderProtocol {
 
     # Метод для обработки результата загрузки
     # Параметры:
-    # — loader: NativeAdLoader - лоадер, который получил рекламы
     # — ads: [NativeAd] - полученные рекламы
+    # — loader: NativeAdLoader - лоадер, который вызвал загрузку рекламы
 
     func onAdsLoaded(loader: NativeAdLoader, ads: [NativeAd]) {}
 
     # Метод для обработки ошибки загрузки
     # Параметры:
-    # — loader: NativeAdLoader - лоадер, который получил рекламы
     # — adError: AdError - ошибка получения рекламы
+    # — loader: NativeAdLoader - лоадер, который вызвал загрузку рекламы
 
     func onAdsFailed(loader: NativeAdLoader, adError: AdError) {}
 }
@@ -399,7 +398,7 @@ class ViewController: UIViewController {
     }()
 
     func viewDidLoad {
-        let request = AdsRequest(placementID: placementID,) # запрос для получение рекламы
+        let request = AdsRequest(placementID: placementID) # запрос для получение рекламы
 
         adLoader.loadAd(request: request) # вызов метода загрузки реклам
     }
@@ -422,38 +421,38 @@ extension ViewController: NativeAdDelegate {
     # - ad: NativeAd - текущая реклама
     # - adError: AdError - ошибка отображения рекламы
 
-	func onAdFailed(_ ad: NativeAd, adError: AdError) {}
+    func onAdFailed(_ ad: NativeAd, adError: AdError) {}
 
     # Метод для обработки закрытия рекламного объявления
     # Параметры:
     # - ad: NativeAd - текущая реклама
 
-	func onCloseAd(_ ad: NativeAd) {}
+    func onCloseAd(_ ad: NativeAd) {}
 
     # Метод для обработки кликов по рекламному объявлению 
     # Параметры:
     # - ad: NativeAd - текущая реклама
 
-	func onAdClicked(_ ad: NativeAd) {}
+    func onAdClicked(_ ad: NativeAd) {}
 
     # Метод для обработки выходов из приложения
     # Параметры:
     # - ad: NativeAd - текущая реклама
 
-	func onLeftApplication(_ ad: NativeAd) {}
+    func onLeftApplication(_ ad: NativeAd) {}
 
     # Метод для обработки возврата в приложение
     # Параметры:
     # - ad: NativeAd - текущая реклама
 
-	func onReturnedToApplication(_ ad: NativeAd) {}
+    func onReturnedToApplication(_ ad: NativeAd) {}
 
     # Метод для обработки impression - события, когда реклама засчитана
     # Параметры:
     # - ad: NativeAd - текущая реклама
     # — data: String? — дополнительная информация, присутствует для реклам Яндекса
 
-	func onImpression(_ ad: NativeAd, _ data: String?) {}
+    func onImpression(_ ad: NativeAd, _ data: String?) {}
 }
 ```
 
@@ -496,10 +495,10 @@ extension ViewController: NativeAdLoaderProtocol {
 
 #### Ресурсы рекламы
 
-У рекламы NativeAd можно получить доступ к полю:
+У рекламы NativeAd можно получить доступ к полям:
 type: NativeAdType - тип полученной рекламы (app или content, значение app принимает только в случае с особой рекламой Яндекса); 
 meta: [String: Any?]? - дополнительные параметры в виде словаря ключ-значение; 
-adAssets: NativeAdAssets - ресурсы рекламы
+adAssets: NativeAdAssets - ресурсы рекламы.
 
 ```ruby
 struct NativeAdAssets
@@ -589,6 +588,156 @@ struct NativeUIKitView: UIViewRepresentable {
 }
 ```
 
+### Отображение нескольких реклам (Native Waterfall)
+Этот формат рекламы - частный случай нативной рекламы. Позволяет создать рекламное объявление с кастомной версткой и автосменой объявлений с анимацией по заданному таймеру.
+Подготовка кастомной вью и связка с полями происходит аналогично нативному формату.
+
+#### Шаг 1: Создайте загрузчик объекта рекламы, используя NativeWaterfallAdLoader
+Создайте экземпляр класса NativeWaterfallAdLoader.
+
+```ruby
+class ViewController: UIViewController {
+
+    private lazy var adLoader: NativeWaterfallAdLoader = {
+        let adLoader = NativeWaterfallAdLoader()
+        adLoader.delegate = self
+        return adLoader
+    }()
+}
+```
+
+#### Шаг 2: Подпишите NativeWaterfallAdLoader на NativeWaterfallAdLoaderProtocol, для получения уведомлений о загрузке и ошибке
+Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствующие методы делегата.
+
+```ruby
+extension ViewController: NativeWaterfallAdLoaderProtocol {
+
+    # Метод для обработки результата загрузки
+    # Параметры:
+    # — ad: NativeWaterfallAd - полученная реклама
+    # — loader: NativeWaterfallAdLoader - лоадер, который вызвал загрузку рекламы
+
+    func onAdLoaded(loader: NativeWaterfallAdLoader, ad: NativeWaterfallAd) {}
+
+    # Метод для обработки ошибки загрузки
+    # Параметры:
+    # — adError: AdError - ошибка получения рекламы
+    # — loader: NativeWaterfallAdLoader - лоадер, который вызвал загрузку рекламы
+
+    func onAdFailed(loader: NativeWaterfallAdLoader, adError: AdError) {}
+}
+```
+
+#### Шаг 3: Создайте запрос для получения рекламы
+
+```ruby
+let request = AdsRequest(placementID: placementID)
+```
+
+#### Шаг 4: Вызовите метод loadAd(request: AdsRequest) для получения рекламы
+
+```ruby
+class ViewController: UIViewController {
+
+    # Лоадер для загрузки рекламы
+
+    private lazy var adLoader: NativeWaterfallAdLoader = { 
+        let adLoader = NativeWaterfallAdLoader()
+        adLoader.delegate = self  # подписка на делегат NativeWaterfallAdLoaderDelegate
+        return adLoader
+    }()
+
+    func viewDidLoad {
+        let request = AdsRequest(placementID: placementID) # запрос для получение рекламы
+
+        adLoader.loadAd(request: request) # вызов метода загрузки рекламы
+    }
+}
+```
+
+#### Шаг 5: Полученный NativeWaterfallAd подпишите на делегат NativeWaterfallAdDelegate для отслеживания событий по рекламному объявлению
+
+```ruby
+extension ViewController: NativeWaterfallAdDelegate {
+
+    # Метод для обработки результата отображения рекламного объявления
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+
+    func onAdLoaded(_ adInfo: NativeWaterfallAdInfo) {}
+
+    # Метод для обработки ошибки отображения рекламного объявления
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+    # - adError: AdError - ошибка отображения рекламы
+
+    func onAdFailed(_ adInfo: NativeWaterfallAdInfo, adError: AdError) {}
+
+    # Метод для обработки закрытия рекламного объявления
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+
+    func onCloseAd(_ adInfo: NativeWaterfallAdInfo) {}
+
+    # Метод для обработки кликов по рекламному объявлению 
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+
+    func onAdClicked(_ adInfo: NativeWaterfallAdInfo) {}
+
+    # Метод для обработки выходов из приложения
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+
+    func onLeftApplication(_ adInfo: NativeWaterfallAdInfo) {}
+
+    # Метод для обработки возврата в приложение
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+
+    func onReturnedToApplication(_ adInfo: NativeWaterfallAdInfo) {}
+
+    # Метод для обработки impression - события, когда реклама засчитана
+    # Параметры:
+    # - adInfo: NativeWaterfallAdInfo - текущая реклама
+    # — data: String? — дополнительная информация, присутствует для реклам Яндекса
+
+    func onImpression(_ adInfo: NativeWaterfallAdInfo, _ data: String?) {}
+}
+```
+
+#### Шаг 6: Полученному NativeWaterfallAd задайте интервал для автосмены объявлений методом setUpdateInterval(_ interval: Int) и свяжите NativeWaterfallAd с вашей кастомной вью методом bindAd для наполнения вашей вью рекламным контентом
+Вызов setUpdateInterval должен быть перед bindAd, иначе будет применено стандартное время автосмены равное 10 секунд. 
+Значение интервала может быть задано в диапазоне от 10 до 30. При указании невалидного значения, вы получите ошибку в лог.
+
+```ruby
+    ...
+
+    private var adNativeWaterfall: NativeWaterfallAd?
+
+    ...
+
+extension ViewController: NativeWaterfallAdLoaderProtocol {
+
+    func onAdLoaded(loader: NativeWaterfallAdLoader, ad: NativeWaterfallAd) {
+        adNativeWaterfall = ad
+        adNativeWaterfall?.delegate = self # подписка на делегат NativeWaterfallAdDelegate
+
+        adNativeWaterfall?.setUpdateInterval(15) # задание значения в 15 секунд для автосмены реклам
+        adNativeWaterfall?.bindAd(adView) # связка рекламного объявления с кастомной вью для отображения
+    }
+}
+```
+
+#### Шаг 7: Вызовите метод destroy() для новой загрузки
+Перед новой загрузкой или перед выходом с экрана необходимо вызвать метод destroy(). Метод очистит вью, верстку, таймеры, обеспечит отсутствие утечек памяти и конфликтов констрейнтов для последующего отображения.
+
+#### Ресурсы рекламы
+
+У NativeWaterfallAdInfo можно получить доступ к полям:
+meta: [String: Any?]? - дополнительные параметры в виде словаря ключ-значение; 
+adAssets: NativeAdAssets - ресурсы рекламы.
+
 ### InStream реклама
 В зону отвественности пользователя для данного формата входит кастомизация плеера и логика скрытия и появления данной рекламы поверх своего видео. 
 
@@ -603,6 +752,8 @@ struct NativeUIKitView: UIViewRepresentable {
 | adInfo        | Значок меню            | UIButton               |
 | adActionBtn   | Кнопка действия        | UIButton               |
 | adMedia       | Медиа (видео)          | NativeMediaView        |
+
+Важное замечание: adInfo может быть скрыт на стороне SDK, если от сервера не пришел ЕРИД. 
 
 Вы можете кастомизировать InstreamPlayerView с помощью следующих методов:
 
@@ -660,7 +811,7 @@ class ViewController: UIViewController {
 ```
 
 #### Шаг 4: Подпишите InstreamAdLoader на InstreamAdLoaderProtocol, для получения уведомлений о загрузке и ошибке
-Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствущие методы делегата.
+Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствующие методы делегата.
 
 ```ruby
 extension ViewController: InstreamAdLoaderProtocol {
@@ -699,7 +850,7 @@ class ViewController: UIViewController {
     }()
 
     func viewDidLoad {
-        let request = AdsRequest(placementID: placementID,) # запрос для получение рекламы
+        let request = AdsRequest(placementID: placementID) # запрос для получение рекламы
 
         adLoader.loadAd(request: request) # вызов метода загрузки реклам
     }
@@ -834,7 +985,7 @@ private lazy var adLoader: InterstitialAdLoader = {
 ```
 
 #### Шаг 2: Подпишите InterstitialAdLoader на InterstitialAdLoaderProtocol, для получения уведомлений о загрузке и ошибке
-Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствущие методы делегата.
+Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствующие методы делегата.
 
 ```ruby
 extension ViewController: InterstitialAdLoaderProtocol {
@@ -853,7 +1004,7 @@ extension ViewController: InterstitialAdLoaderProtocol {
 }
 ```
 
-#### Шаг 3: Создайте запрос для получения реклам
+#### Шаг 3: Создайте запрос для получения рекламы
 
 ```ruby
 let request = AdsRequest(placementID: placementID)
@@ -864,7 +1015,7 @@ let request = AdsRequest(placementID: placementID)
 ```ruby
 class ViewController: UIViewController {
 
-    # Лоадер для загрузки реклам
+    # Лоадер для загрузки рекламы
 
     private lazy var adLoader: InterstitialAdLoader = { 
         let adLoader = InterstitialAdLoader()
@@ -873,9 +1024,9 @@ class ViewController: UIViewController {
     }()
 
     func viewDidLoad {
-        let request = AdsRequest(placementID: placementID,) # запрос для получение рекламы
+        let request = AdsRequest(placementID: placementID) # запрос для получение рекламы
 
-        adLoader.loadAd(request: request) # вызов метода загрузки реклам
+        adLoader.loadAd(request: request) # вызов метода загрузки рекламы
     }
 }
 ```
@@ -912,7 +1063,7 @@ extension ViewController: InterstitialAdDelegate {
 ```
 
 #### Шаг 6: Отобразите рекламное объявление
-Необходимо передать ваш активный вью контроллер в качестве параметра методу show.
+Необходимо передать ваш активный вью контроллер в качестве параметра методу show. 
 Рекламный объект может быть показан только один раз, при попытке повторного отображения вы получите ошибку в лог.
 
 ```ruby
@@ -965,7 +1116,7 @@ private lazy var adLoader: RewardedAdLoader = {
 ```
 
 #### Шаг 2: Подпишите RewardedAdLoader на RewardedAdLoaderProtocol, для получения уведомлений о загрузке и ошибке
-Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствущие методы делегата.
+Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствующие методы делегата.
 
 ```ruby
 extension ViewController: RewardedAdLoaderProtocol {
@@ -984,7 +1135,7 @@ extension ViewController: RewardedAdLoaderProtocol {
 }
 ```
 
-#### Шаг 3: Создайте запрос для получения реклам
+#### Шаг 3: Создайте запрос для получения рекламы
 
 ```ruby
 let request = AdsRequest(placementID: placementID)
@@ -995,7 +1146,7 @@ let request = AdsRequest(placementID: placementID)
 ```ruby
 class ViewController: UIViewController {
 
-    # Лоадер для загрузки реклам
+    # Лоадер для загрузки рекламы
 
     private lazy var adLoader: RewardedAdLoader = { 
         let adLoader = RewardedAdLoader()
@@ -1004,9 +1155,9 @@ class ViewController: UIViewController {
     }()
 
     func viewDidLoad {
-        let request = AdsRequest(placementID: placementID,) # запрос для получение рекламы
+        let request = AdsRequest(placementID: placementID) # запрос для получение рекламы
 
-        adLoader.loadAd(request: request) # вызов метода загрузки реклам
+        adLoader.loadAd(request: request) # вызов метода загрузки рекламы
     }
 }
 ```
@@ -1086,5 +1237,115 @@ struct RewardedView: UIViewControllerRepresentable {
         return controller
     }
 
+}
+```
+
+### AppOpenAd реклама
+Данный формат рекламы отражается только портретно. При попытке отобразить рекламу, когда устройство находится в альбомном режиме, вы получите ошибку в лог.
+
+#### Шаг 1: Создайте загрузчик объекта рекламы, используя AppOpenAdLoader
+Создайте экземпляр класса AppOpenAdLoader.
+```ruby
+private lazy var adLoader: AppOpenAdLoader = {
+    let adLoader = AppOpenAdLoader()
+    adLoader.delegate = self
+    return adLoader
+}()
+```
+
+#### Шаг 2: Подпишите AppOpenAdLoader на AppOpenAdLoaderProtocol, для получения уведомлений о загрузке и ошибке
+Загрузка осуществляется асинхронно, при получении рекламы вызываются соответствующие методы делегата.
+
+```ruby
+extension ViewController: AppOpenAdLoaderProtocol {
+
+    # Метод для обработки результата загрузки
+    # Параметры:
+    # — ad: AppOpenAd - полученная реклама
+
+    func onAdLoaded(ad: AppOpenAd) {}
+
+    # Метод для обработки ошибки загрузки
+    # Параметры:
+    # — adError: AdError - ошибка получения рекламы
+
+    func onAdFailedToLoad(adError: AdError) {}
+}
+```
+
+#### Шаг 3: Создайте запрос для получения рекламы
+
+```ruby
+let request = AdsRequest(placementID: placementID)
+```
+
+#### Шаг 4: Вызовите метод loadAd(request: AdsRequest) для получения рекламы
+
+```ruby
+class ViewController: UIViewController {
+
+    # Лоадер для загрузки рекламы
+
+    private lazy var adLoader: AppOpenAdLoader = { 
+        let adLoader = AppOpenAdLoader()
+        adLoader.delegate = self  # подписка на делегат AppOpenAdLoaderDelegate
+        return adLoader
+    }()
+
+    func viewDidLoad {
+        let request = AdsRequest(placementID: placementID) # запрос для получение рекламы
+
+        adLoader.loadAd(request: request) # вызов метода загрузки рекламы
+    }
+}
+```
+
+#### Шаг 5: Подпишите полученный AppOpenAd на делегат AppOpenAdDelegate для отслеживания событий по рекламному объявлению
+
+```ruby
+extension AppOpenAdView: AppOpenAdDelegate {
+
+    # Метод для обработки результата отображения рекламного объявления
+
+    func appOpenAdDidShow() {}
+
+    # Метод для обработки ошибки отображения рекламного объявления
+    # Параметры:
+    # - adError: AdError - ошибка отображения рекламы
+
+    func appOpenAd(didFailToShowWithError error: AdError) {}
+
+    # Метод для обработки кликов по рекламному объявлению
+
+    func appOpenAdDidClick() {}
+
+    # Метод для обработки закрытия рекламного объявления
+
+    func appOpenAdDidDismiss() {}
+
+    # Метод для обработки impression - события, когда реклама засчитана
+    # Параметры:
+    # — impressionData: String? — дополнительная информация, присутствует для реклам Яндекса
+
+    func appOpenAd(didTrackImpressionWith impressionData: String?) {}
+
+}
+```
+
+#### Шаг 6: Отобразите рекламное объявление
+Необходимо передать ваш активный вью контроллер в качестве параметра методу show.
+Рекламный объект может быть показан только один раз, при попытке повторного отображения вы получите ошибку в лог.
+
+```ruby
+
+extension ViewController: AppOpenAdLoaderProtocol {
+
+    func onAdLoaded(ad: AppOpenAd) {
+        ...
+        ad.delegate = self
+
+        ad.show(from: self)
+        ...
+    }
 }
 ```
