@@ -19,11 +19,7 @@ final class AppOpenAdYandex: BaseAppOpenAd, BuzzoolaAdsSDK.AppOpenAd {
 
     private let model: AdsMeditationItemModel
 
-    private lazy var adLoader: YandexMobileAds.AppOpenAdLoader = {
-        let adLoader = YandexMobileAds.AppOpenAdLoader()
-        adLoader.delegate = self
-        return adLoader
-    }()
+    private lazy var adLoader = YandexMobileAds.AppOpenAdLoader()
 
     private var appOpenAd: YandexMobileAds.AppOpenAd?
 
@@ -128,13 +124,108 @@ final class AppOpenAdYandex: BaseAppOpenAd, BuzzoolaAdsSDK.AppOpenAd {
             return
         }
 
-        let configuration = AdRequestConfiguration(adUnitID: model.mediationID)
+        let targeting = AdTargeting(
+            age: model.age as? NSNumber,
+            gender: model.gender == .male ? .male : .female
+        )
 
-        configuration.mutableConfiguration.age = model.age as? NSNumber
-        configuration.mutableConfiguration.gender = model.gender?.rawValue
-        configuration.mutableConfiguration.adTheme = model.isDarkMode ? .dark : .light
+        let configuration = AdRequest(
+            adUnitID: model.mediationID,
+            targeting: targeting,
+            adTheme: model.isDarkMode ? .dark : .light)
 
-        adLoader.loadAd(with: configuration)
+        Task { @MainActor in
+            do {
+                let ad = try await adLoader.loadAd(with: configuration)
+                
+                isLoaded = true
+                appOpenAd = ad
+                appOpenAd?.delegate = self
+                
+                guard
+                    let startDate = startDate
+                else {
+                    return
+                }
+                
+                BuzzoolaAdsAnalyticsManager.shared.track(
+                    eventName: "response-get-from_adapter_to_sdk",
+                    parameters: [
+                        "eventCategory" : "response",
+                        "eventAction" : "get",
+                        "eventLabel" : "from_adapter_to_sdk",
+                        "eventValue" : "1",
+                        "eventContent" : "appopen",
+                        "eventContext" : "yandex",
+                        "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
+                        "filterName": model.amount.description,
+                        "bannerName": "[null_null]",
+                        "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
+                        "CD1" : model.placementID.description
+                    ]
+                )
+                
+                BuzzoolaAdsAnalyticsManager.shared.track(
+                    eventName: "ad-load-in_app",
+                    parameters: [
+                        "eventCategory" : "ad",
+                        "eventAction" : "load",
+                        "eventLabel" : "in_app",
+                        "eventContent" : "appopen",
+                        "eventContext" : "yandex",
+                        "bannerName" : "null_null",
+                        "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
+                        "CD1" : model.placementID.description
+                    ]
+                )
+                
+                let load = model.eventURLs.load
+                
+                for url in load {
+                    AdRequestSender.shared.makeEventsRequest(
+                        request: .init(
+                            adType: .appOpenAd,
+                            placementID: model.placementID,
+                            creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
+                            type: .load,
+                            url: url,
+                            adSeqNumber: model.index,
+                            count: load.count))
+                }
+                
+                factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
+            } catch {
+                isFailed = true
+                
+                guard
+                    let startDate = startDate
+                else {
+                    return
+                }
+                
+                BuzzoolaAdsAnalyticsManager.shared.track(
+                    eventName: "response-get-from_adapter_to_sdk",
+                    parameters: [
+                        "eventCategory" : "response",
+                        "eventAction" : "get",
+                        "eventLabel" : "from_adapter_to_sdk",
+                        "eventValue" : "0",
+                        "eventContent" : "appopen",
+                        "eventContext" : "yandex",
+                        "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
+                        "filterName": model.amount.description,
+                        "bannerName": "[]",
+                        "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
+                        "deliveryType": error.localizedDescription,
+                        "CD1" : model.placementID.description
+                    ]
+                )
+                
+                factoryDelegate?.onAdAppOpenAdFailed(
+                    error: AdError.loadMediationError(error.localizedDescription),
+                    item: .yandex(model))
+            }
+        }
     }
 
     func show(from viewController: UIViewController) {
@@ -148,103 +239,9 @@ final class AppOpenAdYandex: BaseAppOpenAd, BuzzoolaAdsSDK.AppOpenAd {
             return
         }
 
-        appOpenAd?.show(from: viewController)
-    }
-}
-
-// MARK: - AppOpenAdLoaderDelegate
-
-extension AppOpenAdYandex: AppOpenAdLoaderDelegate {
-
-    func appOpenAdLoader(_ adLoader: YandexMobileAds.AppOpenAdLoader, didLoad appOpenAd: YandexMobileAds.AppOpenAd) {
-        isLoaded = true
-        self.appOpenAd = appOpenAd
-        self.appOpenAd?.delegate = self
-
-        guard
-            let startDate = startDate
-        else {
-            return
+        Task { @MainActor in
+            appOpenAd?.show(from: viewController)
         }
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "1",
-                "eventContent" : "appopen",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
-                "filterName": model.amount.description,
-                "bannerName": "[null_null]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
-                "CD1" : model.placementID.description
-            ]
-        )
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "ad-load-in_app",
-            parameters: [
-                "eventCategory" : "ad",
-                "eventAction" : "load",
-                "eventLabel" : "in_app",
-                "eventContent" : "appopen",
-                "eventContext" : "yandex",
-                "bannerName" : "null_null",
-                "bannerID" : "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
-                "CD1" : model.placementID.description
-            ]
-        )
-
-        let load = model.eventURLs.load
-
-        for url in load {
-            AdRequestSender.shared.makeEventsRequest(
-                request: .init(
-                    adType: .appOpenAd,
-                    placementID: model.placementID,
-                    creativeID: "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description,
-                    type: .load,
-                    url: url,
-                    adSeqNumber: model.index,
-                    count: load.count))
-        }
-
-        factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
-    }
-    
-    func appOpenAdLoader(_ adLoader: YandexMobileAds.AppOpenAdLoader, didFailToLoadWithError error: YandexMobileAds.AdRequestError) {
-        isFailed = true
-
-        guard
-            let startDate = startDate
-        else {
-            return
-        }
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "0",
-                "eventContent" : "appopen",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
-                "filterName": model.amount.description,
-                "bannerName": "[]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
-                "deliveryType": error.error.localizedDescription,
-                "CD1" : model.placementID.description
-            ]
-        )
-
-        factoryDelegate?.onAdAppOpenAdFailed(
-            error: AdError.loadMediationError(error.error.localizedDescription),
-            item: .yandex(model))
     }
 }
 
@@ -276,10 +273,7 @@ extension AppOpenAdYandex: YandexMobileAds.AppOpenAdDelegate {
         )
     }
 
-    func appOpenAd(
-        _ appOpenAd: YandexMobileAds.AppOpenAd,
-        didFailToShowWithError error: Error
-    ) {
+    func appOpenAd(_ appOpenAd: YandexMobileAds.AppOpenAd, didFailToShow error: Error) {
         isFailed = true
         delegate?.appOpenAd(didFailToShowWithError: .loadMediationError(error.localizedDescription))
     }
@@ -330,7 +324,7 @@ extension AppOpenAdYandex: YandexMobileAds.AppOpenAdDelegate {
         }
     }
 
-    func appOpenAd(_ appOpenAd: YandexMobileAds.AppOpenAd, didTrackImpressionWith impressionData: ImpressionData?) {
+    func appOpenAd(_ appOpenAd: YandexMobileAds.AppOpenAd, didTrackImpression impressionData: ImpressionData?) {
         isImpression = true
 
         delegate?.appOpenAd(didTrackImpressionWith: impressionData?.rawData)

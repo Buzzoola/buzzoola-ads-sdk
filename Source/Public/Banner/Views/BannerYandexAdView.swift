@@ -16,16 +16,9 @@ protocol BannerYandexAdViewLoaderDelegate: AnyObject {
 
 final class BannerYandexAdView: UIView, BannerAdViewProtocol {
 
-    private var bannerSize = BannerAdSize.inlineSize(
-        withWidth: 0,
-        maxHeight: 0)
-
     private var adUnitID: String?
 
-    private lazy var adView: AdView = {
-        let adView = AdView(adUnitID: adUnitID ?? "", adSize: bannerSize)
-        return adView
-    }()
+    private var adView: YandexMobileAds.BannerAdView?
 
     private var eventsURLs: AdsMeditationItemModel.EventURL?
 
@@ -104,29 +97,35 @@ extension BannerYandexAdView {
 
         eventsURLs = request.eventURLs
         
-        bannerSize = BannerAdSize.inlineSize(
-            withWidth: bannerWidth,
+        let bannerSize = BannerAdSize.inline(
+            width: bannerWidth,
             maxHeight: bannerHeight)
 
         adUnitID = request.mediationID
 
+        adView = BannerAdView(adSize: bannerSize)
+
         configureUI()
 
-        let adRequest = MutableAdRequest()
+        let targeting = AdTargeting(
+            age: request.age as? NSNumber,
+            gender: model?.gender == .male ? .male : .female
+        )
 
-        adRequest.gender = request.gender?.rawValue
-        adRequest.age = request.age as? NSNumber
-        adRequest.adTheme = request.isDarkMode ? .dark : .light
+        let adRequest = AdRequest(
+            adUnitID: request.mediationID,
+            targeting: targeting,
+            adTheme: request.isDarkMode ? .dark : .light)
 
-        adView.loadAd(with: adRequest)
+        adView?.loadAd(with: adRequest)
     }
 }
 
 // MARK: - AdViewDelegate
 
-extension BannerYandexAdView: AdViewDelegate {
+extension BannerYandexAdView: YandexMobileAds.BannerAdViewDelegate {
 
-    func adViewDidLoad(_ adView: AdView) {
+    func bannerAdViewDidLoad(_ bannerAdView: YandexMobileAds.BannerAdView) {
         isLoaded = true
 
         guard
@@ -166,7 +165,7 @@ extension BannerYandexAdView: AdViewDelegate {
         failedDelegate?.bannerAdViewLoaded()
     }
 
-    func adViewDidClick(_ adView: AdView) {
+    func bannerAdViewDidClick(_ bannerAdView: YandexMobileAds.BannerAdView) {
         delegate?.onAdClicked()
 
         guard
@@ -213,7 +212,7 @@ extension BannerYandexAdView: AdViewDelegate {
         isFirstEventClick = false
     }
 
-    func adView(_ adView: AdView, didTrackImpression impressionData: ImpressionData?) {
+    func bannerAdView(_ bannerAdView: YandexMobileAds.BannerAdView, didTrackImpression impressionData: ImpressionData?) {
         isImpression = true
         
         delegate?.onImpression(impressionData?.rawData)
@@ -261,7 +260,7 @@ extension BannerYandexAdView: AdViewDelegate {
         )
     }
 
-    func adViewDidFailLoading(_ adView: AdView, error: Error) {
+    func bannerAdViewDidFailLoading(_ bannerAdView: YandexMobileAds.BannerAdView, error: Error) {
         isFailed = true
 
         guard
@@ -271,31 +270,6 @@ extension BannerYandexAdView: AdViewDelegate {
         }
 
         failedDelegate?.bannerAdViewFailed(adError: .loadMediationError(error.localizedDescription))
-    }
-
-    func adViewWillLeaveApplication(_ adView: AdView) {
-        delegate?.onLeftApplication()
-
-        configureNotification()
-    }
-
-    func close(_ adView: AdView) {
-        delegate?.onCloseAd()
-    }
-}
-
-// MARK: - Actions
-
-extension BannerYandexAdView {
-
-    @objc
-    func applicationDidBecomeActive() {
-        delegate?.onReturnedToApplication()
-
-        NotificationCenter.default.removeObserver(
-            self,
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil)
     }
 }
 
@@ -310,10 +284,22 @@ private extension BannerYandexAdView {
     }
 
     func configureViews() {
+        guard
+            let adView
+        else {
+            return
+        }
+
         addSubview(adView)
     }
 
     func configureConstraints() {
+        guard
+            let adView
+        else {
+            return
+        }
+
         adView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
@@ -325,15 +311,13 @@ private extension BannerYandexAdView {
     }
 
     func configureStyle() {
+        guard
+            let adView
+        else {
+            return
+        }
+        
         adView.delegate = self
         backgroundColor = .clear
-    }
-
-    func configureNotification() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidBecomeActive),
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil)
     }
 }

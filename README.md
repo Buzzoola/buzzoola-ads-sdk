@@ -13,7 +13,7 @@
 
 ## Текущая версия
 
-Версия: 4.2.0
+Версия: 4.3.0
 
 ## Требования для установки SDK
 
@@ -28,16 +28,16 @@
 Варианты установки:
 1. Чтобы добавить библиотеку в проект c рекламой Buzzoola, ВК и Яндекс, добавьте в свой Podfile:
 ```ruby
-pod 'BuzzoolaAdsSDK', '4.2.0'
-pod 'BuzzoolaAdsSDKYandex', '4.2.0'
+pod 'BuzzoolaAdsSDK', '4.3.0'
+pod 'BuzzoolaAdsSDKYandex', '4.3.0'
 ```
 2. Если вы хотите использовать рекламу Buzzoola и ВК:
 ```ruby
-pod 'BuzzoolaAdsSDK', '4.2.0'
+pod 'BuzzoolaAdsSDK', '4.3.0'
 ```
 3. Если вы хотите использовать только рекламу Buzzoola: 
 ```ruby
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '4.2.0'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '4.3.0'
 ```
 
 Для корректной работы так же обязательно указать в Podfile:
@@ -49,7 +49,7 @@ source 'https://github.com/CocoaPods/Specs.git' # ссылка на общие �
 
 ## Swift Package Manager
 
-Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 4.2.0 или задайте ее вручную, а после нажмите Add Package.
+Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 4.3.0 или задайте ее вручную, а после нажмите Add Package.
 
 Ссылка на внешний репозиторий: 
 ```ruby
@@ -172,12 +172,14 @@ extension ViewController: BannerAdEventProtocol {
     func onAdClicked(_ banner: BannerAdView) {}
 
     # Метод для обработки выходов из приложения
+    # Работает только для реклам Buzzoola и ВК!
     # Параметры:
     # — banner: BannerAdView — баннер, для которого произошло событие
 
     func onLeftApplication(_ banner: BannerAdView) {}
 
     # Метод для обработки возврата в приложение
+    # Работает только для реклам Buzzoola и ВК!
     # Параметры:
     # — banner: BannerAdView — баннер, для которого произошло событие
 
@@ -191,6 +193,7 @@ extension ViewController: BannerAdEventProtocol {
     func onAdFailed(_ banner: BannerAdView, adError: AdError) {}
 
     # Метод для обработки скрытия баннера (ВАЖНО: работает только для рекламы Buzzoola и Яндекс)
+    # Работает только для реклам Buzzoola!
     # Параметры:
     # — banner: BannerAdView — баннер, для которого произошло событие
 
@@ -424,6 +427,7 @@ extension ViewController: NativeAdDelegate {
     func onAdFailed(_ ad: NativeAd, adError: AdError) {}
 
     # Метод для обработки закрытия рекламного объявления
+    # Работает только для реклам Buzzoola и ВК!
     # Параметры:
     # - ad: NativeAd - текущая реклама
 
@@ -436,12 +440,14 @@ extension ViewController: NativeAdDelegate {
     func onAdClicked(_ ad: NativeAd) {}
 
     # Метод для обработки выходов из приложения
+    # Работает только для реклам Buzzoola и ВК!
     # Параметры:
     # - ad: NativeAd - текущая реклама
 
     func onLeftApplication(_ ad: NativeAd) {}
 
     # Метод для обработки возврата в приложение
+    # Работает только для реклам Buzzoola и ВК!
     # Параметры:
     # - ad: NativeAd - текущая реклама
 

@@ -23,13 +23,13 @@ let package = Package(
         .package(
             url: "https://github.com/myTargetSDK/mytarget-ios-spm", from: "5.29.1"),
         .package(
-            url: "https://github.com/yandexmobile/yandex-ads-sdk-ios", from: "7.18.0")
+            url: "https://github.com/yandexmobile/yandex-ads-sdk-ios", from: "8.0.0")
     ],
     targets: [
         .binaryTarget(
             name: "BuzzoolaAdsSDK",
-            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.4.2.0.xcframework.zip",
-            checksum: "765c4b2ea3015e30f1d3c2816d2c59929235d5fbf1fee433a035ea93075a4bf2"),
+            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.4.3.0.xcframework.zip",
+            checksum: "9e7184bc4d17dda1afe1c737cad284697b2a44906db6f441cb20faabfa11c253"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKMyTarget",
             url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.mytarget.4.2.0.xcframework.zip",

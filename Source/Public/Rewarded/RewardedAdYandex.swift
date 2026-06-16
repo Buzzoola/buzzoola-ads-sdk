@@ -19,11 +19,7 @@ final class RewardedAdYandex: BaseRewardedAd, BuzzoolaAdsSDK.RewardedAd {
 
     private let model: AdsMeditationItemModel
 
-    private lazy var adLoader: YandexMobileAds.RewardedAdLoader = {
-        let adLoader = YandexMobileAds.RewardedAdLoader()
-        adLoader.delegate = self
-        return adLoader
-    }()
+    private lazy var adLoader = YandexMobileAds.RewardedAdLoader()
 
     private var rewardedAd: YandexMobileAds.RewardedAd?
 
@@ -127,18 +123,86 @@ final class RewardedAdYandex: BaseRewardedAd, BuzzoolaAdsSDK.RewardedAd {
             return
         }
 
-        let configuration = AdRequestConfiguration(adUnitID: model.mediationID)
+        let targeting = AdTargeting(
+            age: model.age as? NSNumber,
+            gender: model.gender == .male ? .male : .female
+        )
 
-        configuration.mutableConfiguration.age = model.age as? NSNumber
-        configuration.mutableConfiguration.gender = model.gender?.rawValue
-        configuration.mutableConfiguration.adTheme = model.isDarkMode ? .dark : .light
+        let configuration = AdRequest(
+            adUnitID: model.mediationID,
+            targeting: targeting,
+            adTheme: model.isDarkMode ? .dark : .light)
 
-        adLoader.loadAd(with: configuration)
+        Task { @MainActor in
+
+            do {
+                let ad = try await adLoader.loadAd(with: configuration)
+
+                isLoaded = true
+                rewardedAd = ad
+                rewardedAd?.delegate = self
+
+                guard
+                    let startDate = startDate
+                else {
+                    return
+                }
+
+                BuzzoolaAdsAnalyticsManager.shared.track(
+                    eventName: "response-get-from_adapter_to_sdk",
+                    parameters: [
+                        "eventCategory" : "response",
+                        "eventAction" : "get",
+                        "eventLabel" : "from_adapter_to_sdk",
+                        "eventValue" : "1",
+                        "eventContent" : "rewarded",
+                        "eventContext" : "yandex",
+                        "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
+                        "filterName": model.amount.description,
+                        "bannerName": "[null_null]",
+                        "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
+                        "CD1" : model.placementID.description
+                    ]
+                )
+
+                factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
+            } catch {
+                isFailed = true
+
+                guard
+                    let startDate = startDate
+                else {
+                    return
+                }
+
+                BuzzoolaAdsAnalyticsManager.shared.track(
+                    eventName: "response-get-from_adapter_to_sdk",
+                    parameters: [
+                        "eventCategory" : "response",
+                        "eventAction" : "get",
+                        "eventLabel" : "from_adapter_to_sdk",
+                        "eventValue" : "0",
+                        "eventContent" : "rewarded",
+                        "eventContext" : "yandex",
+                        "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
+                        "filterName": model.amount.description,
+                        "bannerName": "[]",
+                        "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
+                        "deliveryType": error.localizedDescription,
+                        "CD1" : model.placementID.description
+                    ]
+                )
+
+                factoryDelegate?.onAdRewardedFailed(
+                    error: AdError.loadMediationError(error.localizedDescription),
+                    item: .yandex(model))
+            }
+        }
     }
 
     func show(from viewController: UIViewController) {
         guard
-            !isLoaded
+            !isImpression
         else {
             if UserDefaults.standard.bool(forKey: "adsEnableLogging") {
                 print("[Ads SDK] ERROR 🍎 Rewarded: the ad can only be shown once.")
@@ -147,74 +211,9 @@ final class RewardedAdYandex: BaseRewardedAd, BuzzoolaAdsSDK.RewardedAd {
             return
         }
 
-        rewardedAd?.show(from: viewController)
-    }
-}
-
-// MARK: - RewardedAdLoaderDelegate
-
-extension RewardedAdYandex: YandexMobileAds.RewardedAdLoaderDelegate {
-
-    func rewardedAdLoader(_ adLoader: YandexMobileAds.RewardedAdLoader, didLoad rewardedAd: YandexMobileAds.RewardedAd) {
-        self.rewardedAd = rewardedAd
-        self.rewardedAd?.delegate = self
-
-        guard
-            let startDate = startDate
-        else {
-            return
+        Task { @MainActor in
+            rewardedAd?.show(from: viewController)
         }
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "1",
-                "eventContent" : "rewarded",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
-                "filterName": model.amount.description,
-                "bannerName": "[null_null]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
-                "CD1" : model.placementID.description
-            ]
-        )
-
-        factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
-    }
-
-    func rewardedAdLoader(_ adLoader: YandexMobileAds.RewardedAdLoader, didFailToLoadWithError error: YandexMobileAds.AdRequestError) {
-        isFailed = true
-
-        guard
-            let startDate = startDate
-        else {
-            return
-        }
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "0",
-                "eventContent" : "rewarded",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
-                "filterName": model.amount.description,
-                "bannerName": "[]",
-                "bannerID": "[" + "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + model.index.description + "]",
-                "deliveryType": error.error.localizedDescription,
-                "CD1" : model.placementID.description
-            ]
-        )
-
-        factoryDelegate?.onAdRewardedFailed(
-            error: AdError.loadMediationError(error.error.localizedDescription),
-            item: .yandex(model))
     }
 }
 
@@ -237,7 +236,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
         )
     }
 
-    func rewardedAd(_ rewardedAd: YandexMobileAds.RewardedAd, didFailToShowWithError error: Error) {
+    func rewardedAd(_ rewardedAd: YandexMobileAds.RewardedAd, didFailToShow error: Error) {
         isFailed = true
 
         delegate?.onAdFailed(adError: .loadMediationError(error.localizedDescription))
@@ -343,7 +342,7 @@ extension RewardedAdYandex: YandexMobileAds.RewardedAdDelegate {
         }
     }
 
-    func rewardedAd(_ rewardedAd: YandexMobileAds.RewardedAd, didTrackImpressionWith impressionData: ImpressionData?) {
+    func rewardedAd(_ rewardedAd: YandexMobileAds.RewardedAd, didTrackImpression impressionData: ImpressionData?) {
         isImpression = true
 
         delegate?.onImpression(impressionData?.rawData)

@@ -17,11 +17,7 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
 
     var ads = [BuzzoolaAdsSDK.NativeAd]()
 
-    private lazy var adLoader: NativeBulkAdLoader = {
-        let adLoader = NativeBulkAdLoader()
-        adLoader.delegate = self
-        return adLoader
-    }()
+    private lazy var adLoader = NativeBulkAdLoader()
 
     private var startDate: Date?
 
@@ -34,7 +30,7 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
     // MARK: Functions
 
     func loadAd() {
-        startDate = Date()
+        self.startDate = Date()
 
         BuzzoolaAdsAnalyticsManager.shared.track(
             eventName: "request-send-from_sdk_to_adapter",
@@ -42,15 +38,15 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
                 "eventCategory" : "request",
                 "eventAction" : "send",
                 "eventLabel" : "from_sdk_to_adapter",
-                "eventValue" : model.amount.description,
+                "eventValue" : self.model.amount.description,
                 "eventContent" : "native",
                 "eventContext" : "yandex",
-                "CD1" : model.placementID.description
+                "CD1" : self.model.placementID.description
             ]
         )
 
         guard
-            model.mediationID != ""
+            self.model.mediationID != ""
         else {
             if UserDefaults.standard.bool(forKey: "adsEnableLogging") {
                 print("[Ads SDK] ERROR 🍎 Native Yandex: id is empty")
@@ -66,117 +62,86 @@ final class NativeAdYandexObject: BaseNativeAdObject, NativeAdObject {
                     "eventContent" : "native",
                     "eventContext" : "yandex",
                     "buttonLocation" : (Date().timeIntervalSince(startDate!) * 1000).roundedStringBuzzoola(),
-                    "filterName": model.amount.description,
+                    "filterName": self.model.amount.description,
                     "bannerName": "[]",
                     "bannerID": "[]",
                     "deliveryType": AdError.loadMediationError("Yandex: id is empty").errorDescription,
-                    "CD1" : model.placementID.description
+                    "CD1" : self.model.placementID.description
                 ]
             )
 
-            factoryDelegate?.onAdNativeFailed(
+            self.factoryDelegate?.onAdNativeFailed(
                 error: .loadMediationError("Yandex: id is empty"),
                 item: .yandex(model))
             return
         }
         
-        let requestConfiguration = MutableNativeAdRequestConfiguration(adUnitID: model.mediationID)
-
-        requestConfiguration.adTheme = model.isDarkMode ? .dark : .light
-        requestConfiguration.age = model.age as? NSNumber
-        requestConfiguration.gender = model.gender?.rawValue
-
-        adLoader.loadAds(with: requestConfiguration, adsCount: model.amount)
-    }
-}
-
-// MARK: - YMANativeAdLoaderDelegate
-
-extension NativeAdYandexObject: NativeBulkAdLoaderDelegate {
-
-    func nativeBulkAdLoader(_ nativeBulkAdLoader: YandexMobileAds.NativeBulkAdLoader, didLoad ads: [any YandexMobileAds.NativeAd]) {
-        var listBannerName = [String]()
-        var listBannerID = [String]()
-        var listPaymentType = [String]()
-
-        ads.enumerated().forEach { number, ad in
-            let bulkModel = AdsMeditationItemModel(
-                index: number + 1,
-                placementID: model.placementID,
-                mediationID: model.mediationID,
-                width: model.width,
-                height: model.height,
-                eventURLs: model.eventURLs,
-                gender: model.gender,
-                age: model.age,
-                amount: model.amount,
-                isDarkMode: model.isDarkMode)
-
-            let adItem = NativeAdYandex(model: bulkModel, ad: ad)
-            self.ads.append(adItem)
-
-            let bannerName = (ad.adAssets().domain ?? "null") + "_" + (ad.adAssets().title ?? "null")
-            listBannerName.append(bannerName)
-
-            let bannerID = "yandex_" + Date().timeIntervalSince1970.roundedStringBuzzoola() + "_" + bulkModel.index.description
-            listBannerID.append(bannerID)
-
-            listPaymentType.append(ad.adAssets().price ?? "null")
-        }
-
-        guard
-            let startDate = startDate
-        else {
-            return
-        }
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : ads.count.description,
-                "eventContent" : "native",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
-                "filterName": model.amount.description,
-                "bannerName": "[" + listBannerName.joined(separator: ", ") + "]",
-                "bannerID": "[" + listBannerID.joined(separator: ", ") + "]",
-                "CD1" : model.placementID.description
-            ]
+        let targeting = AdTargeting(
+            age: self.model.age as? NSNumber,
+            gender: self.model.gender == .male ? .male : .female
         )
 
-        factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
-    }
+        let configuration = AdRequest(
+            adUnitID: self.model.mediationID,
+            targeting: targeting,
+            adTheme: self.model.isDarkMode ? .dark : .light)
 
-    func nativeBulkAdLoader(_ nativeBulkAdLoader: YandexMobileAds.NativeBulkAdLoader, didFailLoadingWithError error: any Error) {
-        guard
-            let startDate = startDate
-        else {
-            return
+        self.adLoader.loadAds(with: configuration, adsCount: UInt(self.model.amount)) { [weak self] in
+            guard
+                let self
+            else {
+                return
+            }
+
+            switch $0 {
+            case .success(let ads):
+                ads.enumerated().forEach { number, ad in
+                    let bulkModel = AdsMeditationItemModel(
+                        index: number + 1,
+                        placementID: self.model.placementID,
+                        mediationID: self.model.mediationID,
+                        width: self.model.width,
+                        height: self.model.height,
+                        eventURLs: self.model.eventURLs,
+                        gender: self.model.gender,
+                        age: self.model.age,
+                        amount: self.model.amount,
+                        isDarkMode: self.model.isDarkMode)
+
+                    let adItem = NativeAdYandex(model: bulkModel, ad: ad)
+                    self.ads.append(adItem)
+                }
+
+                factoryDelegate?.onAdLoaded(ad: self, item: .yandex(model))
+            case .failure(let error):
+                guard
+                    let startDate = startDate
+                else {
+                    return
+                }
+
+                BuzzoolaAdsAnalyticsManager.shared.track(
+                    eventName: "response-get-from_adapter_to_sdk",
+                    parameters: [
+                        "eventCategory" : "response",
+                        "eventAction" : "get",
+                        "eventLabel" : "from_adapter_to_sdk",
+                        "eventValue" : "0",
+                        "eventContent" : "native",
+                        "eventContext" : "yandex",
+                        "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
+                        "filterName": model.amount.description,
+                        "bannerName": "[]",
+                        "bannerID": "[]",
+                        "deliveryType": error.localizedDescription,
+                        "CD1" : model.placementID.description
+                    ]
+                )
+
+                factoryDelegate?.onAdNativeFailed(
+                    error: AdError.loadMediationError(error.localizedDescription),
+                    item: .yandex(model))
+            }
         }
-
-        BuzzoolaAdsAnalyticsManager.shared.track(
-            eventName: "response-get-from_adapter_to_sdk",
-            parameters: [
-                "eventCategory" : "response",
-                "eventAction" : "get",
-                "eventLabel" : "from_adapter_to_sdk",
-                "eventValue" : "0",
-                "eventContent" : "native",
-                "eventContext" : "yandex",
-                "buttonLocation" : (Date().timeIntervalSince(startDate) * 1000).roundedStringBuzzoola(),
-                "filterName": model.amount.description,
-                "bannerName": "[]",
-                "bannerID": "[]",
-                "deliveryType": error.localizedDescription,
-                "CD1" : model.placementID.description
-            ]
-        )
-        
-        factoryDelegate?.onAdNativeFailed(
-            error: AdError.loadMediationError(error.localizedDescription),
-            item: .yandex(model))
     }
 }

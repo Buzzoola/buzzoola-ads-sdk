@@ -9,17 +9,17 @@ import Foundation
 import YandexMobileAds
 import BuzzoolaAdsSDK
 
-class NativeAdYandexView: YMANativeAdView {
+class NativeAdYandexView: YandexMobileAds.NativeAdView {
 
     // MARK: Properties
 
-    var nativeAdView: NativeAdView
+    var nativeAdView: BuzzoolaAdsSDK.NativeAdView
 
     private var nativeAdViewSuperview: UIView?
 
     // MARK: Initialization
 
-    init(nativeAdView: NativeAdView) {
+    init(nativeAdView: BuzzoolaAdsSDK.NativeAdView) {
         self.nativeAdView = nativeAdView
 
         super.init(frame: CGRect())
@@ -54,7 +54,7 @@ class NativeAdYandexView: YMANativeAdView {
         nativeAdView.adReviews?.text = ""
         nativeAdView.adFavicon?.image = nil
         nativeAdView.adIcon?.image = nil
-        nativeAdView.adRating?.setRating(0)
+        nativeAdView.adRating?.rating = 0
         nativeAdView.adActionBtn?.setTitle("", for: .normal)
 
         guard
@@ -97,7 +97,7 @@ private extension NativeAdYandexView {
     }
 
     func bindAssets() {
-        let media = NativeYandexMediaView()
+        let media = YandexMobileAds.NativeMediaView()
 
         nativeAdView.adMedia?.content = media
         nativeAdView.adMedia?.configureUI()
@@ -123,11 +123,12 @@ private extension NativeAdYandexView {
 
 extension NativeRatingView: Rating {
 
-    public func setRating(_ rating: NSNumber?) {
-        delegate?.setRating(rating)
-    }
-
-    public func rating() -> NSNumber? {
-        return delegate?.getRating()
+    public var rating: NSNumber? {
+        get {
+            return delegate?.getRating()
+        }
+        set {
+            delegate?.setRating(newValue)
+        }
     }
 }
