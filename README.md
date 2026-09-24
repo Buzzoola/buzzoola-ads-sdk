@@ -13,11 +13,11 @@
 
 ## Текущая версия
 
-Версия: 4.3.0
+Версия: 5.0.0
 
 ## Требования для установки SDK
 
-- iOS 13.0+
+- iOS 15.0+
 
 # Подключение SDK
 
@@ -28,16 +28,16 @@
 Варианты установки:
 1. Чтобы добавить библиотеку в проект c рекламой Buzzoola, ВК и Яндекс, добавьте в свой Podfile:
 ```ruby
-pod 'BuzzoolaAdsSDK', '4.3.0'
-pod 'BuzzoolaAdsSDKYandex', '4.3.0'
+pod 'BuzzoolaAdsSDK', '5.0.0'
+pod 'BuzzoolaAdsSDKYandex', '5.0.0'
 ```
 2. Если вы хотите использовать рекламу Buzzoola и ВК:
 ```ruby
-pod 'BuzzoolaAdsSDK', '4.3.0'
+pod 'BuzzoolaAdsSDK', '5.0.0'
 ```
 3. Если вы хотите использовать только рекламу Buzzoola: 
 ```ruby
-pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '4.3.0'
+pod 'BuzzoolaAdsSDK/BuzzoolaAdsSDK', '5.0.0'
 ```
 
 Для корректной работы так же обязательно указать в Podfile:
@@ -49,7 +49,7 @@ source 'https://github.com/CocoaPods/Specs.git' # ссылка на общие �
 
 ## Swift Package Manager
 
-Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 4.3.0 или задайте ее вручную, а после нажмите Add Package.
+Выберите File — Add Packages Dependencies. В поиск добавьте URL проекта, проверьте, что выбрана последняя версия 5.0.0 или задайте ее вручную, а после нажмите Add Package.
 
 Ссылка на внешний репозиторий: 
 ```ruby
@@ -74,7 +74,9 @@ SDK имеет в себе три подмодуля.
 
 ## Инициализация SDK
 Перед использованием обязательно выполнить инициализацию SDK. В этот момент осуществляется запрос доступа к рекламному идентификатору и всплывает системное уведомление пользователю вашего приложения. В своем Info.plist не забудьте добавить ключ NSUserTrackingUsageDescription и описать для чего вы будете использовать отслеживание. 
-Если вы подключаете Яндекс, то необходимо в Info.plist так же указать в массиве SKAdNetworkItems элемент SKAdNetworkIdentifier со значением zq492l623r.skadnetwork, это требование SDK Яндекса, более подробно - https://ads.yandex.com/helpcenter/ru/dev/ios/quick-start#skad. 
+Если вы подключаете Яндекс, то необходимо: 
+1) в настройках сборки Build Settings в секции Linking добавьте значение параметра Other Linker Flags = -ObjC
+2) в Info.plist указать в массиве SKAdNetworkItems элемент SKAdNetworkIdentifier со значением zq492l623r.skadnetwork, это требование SDK Яндекса, более подробно - https://ads.yandex.com/helpcenter/ru/dev/ios/quick-start#skad. 
 
 Предпочтительно размещать инициализацию в AppDelegate, чтобы точно гарантировать работу SDK.
 Без инициализации вызов методов SDK не имеет смысла.
@@ -170,20 +172,6 @@ extension ViewController: BannerAdEventProtocol {
     # — banner: BannerAdView — баннер, для которого произошло событие
 
     func onAdClicked(_ banner: BannerAdView) {}
-
-    # Метод для обработки выходов из приложения
-    # Работает только для реклам Buzzoola и ВК!
-    # Параметры:
-    # — banner: BannerAdView — баннер, для которого произошло событие
-
-    func onLeftApplication(_ banner: BannerAdView) {}
-
-    # Метод для обработки возврата в приложение
-    # Работает только для реклам Buzzoola и ВК!
-    # Параметры:
-    # — banner: BannerAdView — баннер, для которого произошло событие
-
-    func onReturnedToApplication(_ banner: BannerAdView) {}
 
     # Метод для обработки ошибки загрузки
     # Параметры:
@@ -307,7 +295,10 @@ class NativeCustomAdView: NativeAdView {
 | adReviews     | Количество оценок      | UILabel                | Нет                |
 | adRating      | Рейтинг                | View implements Rating | Нет                |
 
-ВАЖНО! Необходимо в верстке размещать ваш наследник NativeAdView в пустой UIView. Эта обертка обеспечит корректную работу и отображение рекламных объявлений. Пример:
+
+ВАЖНО:
+- SDK может самостоятельно менять видимость компонентов, за исключением элемента adMedia, используя свойство isHidden. Стоит учитывать это при верстке;
+- Необходимо в верстке размещать ваш наследник NativeAdView в пустой UIView. Эта обертка обеспечит корректную работу и отображение рекламных объявлений. Пример:
 
 ```ruby
 
@@ -438,20 +429,6 @@ extension ViewController: NativeAdDelegate {
     # - ad: NativeAd - текущая реклама
 
     func onAdClicked(_ ad: NativeAd) {}
-
-    # Метод для обработки выходов из приложения
-    # Работает только для реклам Buzzoola и ВК!
-    # Параметры:
-    # - ad: NativeAd - текущая реклама
-
-    func onLeftApplication(_ ad: NativeAd) {}
-
-    # Метод для обработки возврата в приложение
-    # Работает только для реклам Buzzoola и ВК!
-    # Параметры:
-    # - ad: NativeAd - текущая реклама
-
-    func onReturnedToApplication(_ ad: NativeAd) {}
 
     # Метод для обработки impression - события, когда реклама засчитана
     # Параметры:
@@ -690,18 +667,6 @@ extension ViewController: NativeWaterfallAdDelegate {
     # - adInfo: NativeWaterfallAdInfo - текущая реклама
 
     func onAdClicked(_ adInfo: NativeWaterfallAdInfo) {}
-
-    # Метод для обработки выходов из приложения
-    # Параметры:
-    # - adInfo: NativeWaterfallAdInfo - текущая реклама
-
-    func onLeftApplication(_ adInfo: NativeWaterfallAdInfo) {}
-
-    # Метод для обработки возврата в приложение
-    # Параметры:
-    # - adInfo: NativeWaterfallAdInfo - текущая реклама
-
-    func onReturnedToApplication(_ adInfo: NativeWaterfallAdInfo) {}
 
     # Метод для обработки impression - события, когда реклама засчитана
     # Параметры:

@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "BuzzoolaAdsSDK",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v15)
     ],
     products: [
         .library(
@@ -21,19 +21,19 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/myTargetSDK/mytarget-ios-spm", from: "5.29.1"),
+            url: "https://github.com/myTargetSDK/mytarget-ios-spm", from: "5.46.1"),
         .package(
             url: "https://github.com/yandexmobile/yandex-ads-sdk-ios", from: "8.0.0")
     ],
     targets: [
-        .binaryTarget(
+         .binaryTarget(
             name: "BuzzoolaAdsSDK",
-            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.4.3.0.xcframework.zip",
-            checksum: "9e7184bc4d17dda1afe1c737cad284697b2a44906db6f441cb20faabfa11c253"),
+            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.5.0.0v1.xcframework.zip",
+            checksum: "33be1cf53a74d085498c2e428f223b2a2a42b24e9cb4ff60cde3657be38864d7"),
         .binaryTarget(
             name: "BuzzoolaAdsSDKMyTarget",
-            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.mytarget.4.2.0.xcframework.zip",
-            checksum: "1c1ec0b7d0e4c16e7b7af813bcd3295ff235291764353e6705f59f3f8437e4b8"),
+            url: "https://s-mobile-pub.buzzoola.com/buzzoola.sdk.ios.mytarget.5.0.0v1.xcframework.zip",
+            checksum: "a57d882dcbf2acd0bb294fe49bc5c50037179c8c74430665d41ac79c2773e14e"),
         .target(
             name: "BuzzoolaAdsSDKYandex",
             dependencies: [
